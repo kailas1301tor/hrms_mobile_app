@@ -1,13 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrms_mobile/res/enums/enums.dart' show LoaderState;
 import 'package:hrms_mobile/utils/helpers/extensions.dart';
 
 import '../../res/styles/color_palette.dart';
 import '../../res/styles/fonts/inter_font_palette.dart';
 import 'shimmer_loaders.dart';
-
-
 
 Widget buttonLoader({double? loadingRadius, Color? color}) =>
     CupertinoActivityIndicator(
@@ -169,7 +168,12 @@ class _CommonSwitchStateState extends State<CommonSwitchState> {
 class _DefaultShimmerLoader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return CardListShimmer(itemCount: 5);
+    return Center(
+      child: CupertinoActivityIndicator(
+        color: ColorPalette.primaryColor,
+        radius: 20.r,
+      ),
+    );
   }
 }
 

@@ -8,17 +8,23 @@ import 'color_palette.dart';
 import 'fonts/inter_font_palette.dart';
 
 class AppTheme {
+  static const systemOverlayStyle = SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+    statusBarBrightness: Brightness.light,
+  );
+
   static ThemeData get themeData => ThemeData(
     scaffoldBackgroundColor: ColorPalette.white,
     primarySwatch: materialPrimary,
-    highlightColor: ColorPalette.primaryColor.mimicOpacityColor(0.03),
-    splashColor: ColorPalette.primaryColor.mimicOpacityColor(0.06),
+    highlightColor: ColorPalette.primaryColor.withValues(alpha: 0.03),
+    splashColor: ColorPalette.primaryColor.withValues(alpha: 0.06),
     fontFamily: InterFontPalette.interFontFamily,
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
       seedColor: ColorPalette.primaryColor,
       primary: ColorPalette.primaryColor,
-      secondary: ColorPalette.accentColor,
+      secondary: ColorPalette.primaryColor,
     ),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: <TargetPlatform, PageTransitionsBuilder>{
@@ -57,15 +63,15 @@ class AppTheme {
       fillColor: ColorPalette.white,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: ColorPalette.grey.withOpacity(0.3)),
+        borderSide: BorderSide(color: ColorPalette.grey.withValues(alpha: 0.3)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: ColorPalette.grey.withOpacity(0.3)),
+        borderSide: BorderSide(color: ColorPalette.grey.withValues(alpha: 0.3)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: ColorPalette.accentColor, width: 2),
+        borderSide: BorderSide(color: ColorPalette.primaryColor, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),

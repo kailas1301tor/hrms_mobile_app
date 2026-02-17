@@ -15,11 +15,10 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorPalette.fF5F6F7,
+      backgroundColor: ColorPalette.white,
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -28,12 +27,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onRefresh: () async {
                 log("Home screen is refreshed");
               },
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(bottom: 100.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [Text("Home")],
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [Center(child: Text("Home"))],
               ),
             ),
           ],

@@ -54,4 +54,11 @@ class Strings {
   static const iconicBrazilDuration = "8 days";
   static const beach = "Beach";
   static const beachDuration = "8 days";
+
+  // Navigation
+  static const navHome = "PULSE";
+  static const navSchedule = "TRACK";
+  static const navReport = "SALARY";
+  static const navSettings = "EXIT";
+  static const exitPressAgain = "Press back again to exit";
 }

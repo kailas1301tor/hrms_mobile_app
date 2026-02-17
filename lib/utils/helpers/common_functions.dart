@@ -1,10 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:toastification/toastification.dart';
+import '../common_widgets/custom_toast_widget.dart';
 
 import '../../data/remote/network_base_services.dart';
 import '../../res/enums/enums.dart';
-
 
 Future<bool> isInternetAvailable() async {
   try {
@@ -85,4 +85,32 @@ String? getErrorFromResponse({required String key, required dynamic response}) {
     return null;
   }
   return null;
+}
+
+void showCustomToast({
+  required String message,
+  bool? isSuccess,
+  Duration? duration,
+  String? link,
+  VoidCallback? onLinkTap,
+}) {
+  toastification.showCustom(
+    alignment: Alignment.bottomCenter,
+    autoCloseDuration: duration ?? const Duration(seconds: 4),
+    builder: (context, holder) {
+      return CustomToastWidget(
+        message: message,
+        isSuccess: isSuccess,
+        link: link,
+        onLinkTap: onLinkTap,
+        onClose: () => toastification.dismiss(holder),
+      );
+    },
+  );
+}
+
+void executeAfterFrame(VoidCallback callback) {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    callback();
+  });
 }

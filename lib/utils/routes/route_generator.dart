@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 import '../../src/home/view/home_screen.dart';
+import '../../src/login/view/login_screen.dart';
 import '../../src/splash/view/splash_screen.dart';
+import '../../src/main/view/main_screen.dart';
 import 'route_constants.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -16,6 +17,15 @@ class RouteGenerator {
 
       case RouteConstants.routeHomeScreen:
         return _buildRoute(RouteConstants.routeHomeScreen, const HomeScreen());
+
+      case RouteConstants.routeMainScreen:
+        return _buildRoute(RouteConstants.routeMainScreen, const MainScreen());
+
+      case RouteConstants.routeLoginScreen:
+        return _buildRoute(
+          RouteConstants.routeLoginScreen,
+          const LoginScreen(),
+        );
 
       default:
         return _buildRoute(

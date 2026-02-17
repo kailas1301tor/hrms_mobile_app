@@ -7,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../res/styles/color_palette.dart';
 import '../../res/styles/fonts/inter_font_palette.dart';
 
-
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
     super.key,
@@ -57,15 +56,15 @@ class PrimaryButton extends StatelessWidget {
       child: ClipRRect(
         borderRadius: borderRadius,
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: Stack(
             children: [
               // 1. Ultra-transparent base (Glass tint)
               Container(
                 decoration: BoxDecoration(
                   borderRadius: borderRadius,
-                  color: Colors.white.withValues(
-                    alpha: 0.2,
+                  color: ColorPalette.primaryColor.withValues(
+                    alpha: 0.9,
                   ), // Much more transparent
                 ),
               ),
@@ -143,7 +142,7 @@ class PrimaryButton extends StatelessWidget {
                           width: 24.w,
                           child: CupertinoActivityIndicator(
                             radius: 12.r,
-                            color: ColorPalette.black,
+                            color: ColorPalette.white,
                           ),
                         )
                       : Text(
