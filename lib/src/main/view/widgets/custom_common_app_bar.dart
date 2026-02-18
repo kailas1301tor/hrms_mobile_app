@@ -5,7 +5,9 @@ import '../../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
 
 class CustomCommonAppBar extends StatelessWidget
     implements PreferredSizeWidget {
-  const CustomCommonAppBar({super.key});
+  final String? title;
+  final String? subtitle;
+  const CustomCommonAppBar({super.key, this.title, this.subtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,7 @@ class CustomCommonAppBar extends StatelessWidget
         top: MediaQuery.of(context).padding.top + 10.h,
         left: 20.w,
         right: 20.w,
-        bottom: 10.h,
+        bottom: 10.w,
       ),
       decoration: BoxDecoration(
         color: ColorPalette.white,
@@ -29,8 +31,8 @@ class CustomCommonAppBar extends StatelessWidget
         children: [
           // Logo Container
           Container(
-            width: 48.w,
-            height: 48.w,
+            width: 44.w,
+            height: 44.w,
             decoration: BoxDecoration(
               color: ColorPalette.primaryColor,
               borderRadius: BorderRadius.circular(12.r),
@@ -49,7 +51,7 @@ class CustomCommonAppBar extends StatelessWidget
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Nexus Portal",
+                  title ?? "Nexus Portal",
                   style: TextStyle(
                     fontFamily:
                         PlusJakartaSansFontPalette.plusJakartaSansFamily,
@@ -59,7 +61,7 @@ class CustomCommonAppBar extends StatelessWidget
                   ),
                 ),
                 Text(
-                  "STAFF ENTRY",
+                  subtitle ?? "STAFF ENTRY",
                   style: TextStyle(
                     fontFamily:
                         PlusJakartaSansFontPalette.plusJakartaSansFamily,

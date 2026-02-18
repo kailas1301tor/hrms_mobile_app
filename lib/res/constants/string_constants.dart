@@ -63,4 +63,8 @@ class Strings {
   static const exitPressAgain = "Press back again to exit";
   static const loginSuccessful = "Login Successful";
   static const loginFailed = "Login Failed";
+  // Navigation admin
+  static const adminNavSummary = "Summary";
+  static const adminNavAttendance = "Attendance";
+  static const adminNavRequests = "Requests";
 }

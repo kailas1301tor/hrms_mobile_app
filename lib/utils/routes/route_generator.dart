@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hrms_mobile/src/admin/main/view/admin_main_screen.dart';
 
 import '../../src/home/view/home_screen.dart';
 import '../../src/login/view/login_screen.dart';
@@ -25,6 +26,11 @@ class RouteGenerator {
         return _buildRoute(
           RouteConstants.routeLoginScreen,
           const LoginScreen(),
+        );
+      case RouteConstants.routeAdminMainScreen:
+        return _buildRoute(
+          RouteConstants.routeAdminMainScreen,
+          const AdminMainScreen(),
         );
 
       default:
