@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HomeState {
 
- bool get isLoading; bool get buttonLoader; List<TourModel> get tours; List<TripModel> get trips; String? get errorMessage;
+ bool get isLoading; bool get buttonLoader;
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $HomeStateCopyWith<HomeState> get copyWith => _$HomeStateCopyWithImpl<HomeState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.buttonLoader, buttonLoader) || other.buttonLoader == buttonLoader)&&const DeepCollectionEquality().equals(other.tours, tours)&&const DeepCollectionEquality().equals(other.trips, trips)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HomeState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.buttonLoader, buttonLoader) || other.buttonLoader == buttonLoader));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,buttonLoader,const DeepCollectionEquality().hash(tours),const DeepCollectionEquality().hash(trips),errorMessage);
+int get hashCode => Object.hash(runtimeType,isLoading,buttonLoader);
 
 @override
 String toString() {
-  return 'HomeState(isLoading: $isLoading, buttonLoader: $buttonLoader, tours: $tours, trips: $trips, errorMessage: $errorMessage)';
+  return 'HomeState(isLoading: $isLoading, buttonLoader: $buttonLoader)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $HomeStateCopyWith<$Res>  {
   factory $HomeStateCopyWith(HomeState value, $Res Function(HomeState) _then) = _$HomeStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, bool buttonLoader, List<TourModel> tours, List<TripModel> trips, String? errorMessage
+ bool isLoading, bool buttonLoader
 });
 
 
@@ -62,14 +62,11 @@ class _$HomeStateCopyWithImpl<$Res>
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? buttonLoader = null,Object? tours = null,Object? trips = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? buttonLoader = null,}) {
   return _then(_self.copyWith(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,buttonLoader: null == buttonLoader ? _self.buttonLoader : buttonLoader // ignore: cast_nullable_to_non_nullable
-as bool,tours: null == tours ? _self.tours : tours // ignore: cast_nullable_to_non_nullable
-as List<TourModel>,trips: null == trips ? _self.trips : trips // ignore: cast_nullable_to_non_nullable
-as List<TripModel>,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as bool,
   ));
 }
 
@@ -151,10 +148,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  bool buttonLoader,  List<TourModel> tours,  List<TripModel> trips,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  bool buttonLoader)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
-return $default(_that.isLoading,_that.buttonLoader,_that.tours,_that.trips,_that.errorMessage);case _:
+return $default(_that.isLoading,_that.buttonLoader);case _:
   return orElse();
 
 }
@@ -172,10 +169,10 @@ return $default(_that.isLoading,_that.buttonLoader,_that.tours,_that.trips,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  bool buttonLoader,  List<TourModel> tours,  List<TripModel> trips,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  bool buttonLoader)  $default,) {final _that = this;
 switch (_that) {
 case _HomeState():
-return $default(_that.isLoading,_that.buttonLoader,_that.tours,_that.trips,_that.errorMessage);}
+return $default(_that.isLoading,_that.buttonLoader);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -189,10 +186,10 @@ return $default(_that.isLoading,_that.buttonLoader,_that.tours,_that.trips,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  bool buttonLoader,  List<TourModel> tours,  List<TripModel> trips,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  bool buttonLoader)?  $default,) {final _that = this;
 switch (_that) {
 case _HomeState() when $default != null:
-return $default(_that.isLoading,_that.buttonLoader,_that.tours,_that.trips,_that.errorMessage);case _:
+return $default(_that.isLoading,_that.buttonLoader);case _:
   return null;
 
 }
@@ -204,26 +201,11 @@ return $default(_that.isLoading,_that.buttonLoader,_that.tours,_that.trips,_that
 
 
 class _HomeState implements HomeState {
-  const _HomeState({this.isLoading = false, this.buttonLoader = false, final  List<TourModel> tours = const [], final  List<TripModel> trips = const [], this.errorMessage}): _tours = tours,_trips = trips;
+  const _HomeState({this.isLoading = false, this.buttonLoader = false});
   
 
 @override@JsonKey() final  bool isLoading;
 @override@JsonKey() final  bool buttonLoader;
- final  List<TourModel> _tours;
-@override@JsonKey() List<TourModel> get tours {
-  if (_tours is EqualUnmodifiableListView) return _tours;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_tours);
-}
-
- final  List<TripModel> _trips;
-@override@JsonKey() List<TripModel> get trips {
-  if (_trips is EqualUnmodifiableListView) return _trips;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_trips);
-}
-
-@override final  String? errorMessage;
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +217,16 @@ _$HomeStateCopyWith<_HomeState> get copyWith => __$HomeStateCopyWithImpl<_HomeSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.buttonLoader, buttonLoader) || other.buttonLoader == buttonLoader)&&const DeepCollectionEquality().equals(other._tours, _tours)&&const DeepCollectionEquality().equals(other._trips, _trips)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HomeState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.buttonLoader, buttonLoader) || other.buttonLoader == buttonLoader));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,buttonLoader,const DeepCollectionEquality().hash(_tours),const DeepCollectionEquality().hash(_trips),errorMessage);
+int get hashCode => Object.hash(runtimeType,isLoading,buttonLoader);
 
 @override
 String toString() {
-  return 'HomeState(isLoading: $isLoading, buttonLoader: $buttonLoader, tours: $tours, trips: $trips, errorMessage: $errorMessage)';
+  return 'HomeState(isLoading: $isLoading, buttonLoader: $buttonLoader)';
 }
 
 
@@ -255,7 +237,7 @@ abstract mixin class _$HomeStateCopyWith<$Res> implements $HomeStateCopyWith<$Re
   factory _$HomeStateCopyWith(_HomeState value, $Res Function(_HomeState) _then) = __$HomeStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, bool buttonLoader, List<TourModel> tours, List<TripModel> trips, String? errorMessage
+ bool isLoading, bool buttonLoader
 });
 
 
@@ -272,14 +254,11 @@ class __$HomeStateCopyWithImpl<$Res>
 
 /// Create a copy of HomeState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? buttonLoader = null,Object? tours = null,Object? trips = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? buttonLoader = null,}) {
   return _then(_HomeState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,buttonLoader: null == buttonLoader ? _self.buttonLoader : buttonLoader // ignore: cast_nullable_to_non_nullable
-as bool,tours: null == tours ? _self._tours : tours // ignore: cast_nullable_to_non_nullable
-as List<TourModel>,trips: null == trips ? _self._trips : trips // ignore: cast_nullable_to_non_nullable
-as List<TripModel>,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as bool,
   ));
 }
 

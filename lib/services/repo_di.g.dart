@@ -9,43 +9,43 @@ part of 'repo_di.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(homeRepository)
-const homeRepositoryProvider = HomeRepositoryProvider._();
+@ProviderFor(loginRepository)
+const loginRepositoryProvider = LoginRepositoryProvider._();
 
-final class HomeRepositoryProvider
-    extends $FunctionalProvider<HomeRepo, HomeRepo, HomeRepo>
-    with $Provider<HomeRepo> {
-  const HomeRepositoryProvider._()
+final class LoginRepositoryProvider
+    extends $FunctionalProvider<LoginRepo, LoginRepo, LoginRepo>
+    with $Provider<LoginRepo> {
+  const LoginRepositoryProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'homeRepositoryProvider',
+        name: r'loginRepositoryProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$homeRepositoryHash();
+  String debugGetCreateSourceHash() => _$loginRepositoryHash();
 
   @$internal
   @override
-  $ProviderElement<HomeRepo> $createElement($ProviderPointer pointer) =>
+  $ProviderElement<LoginRepo> $createElement($ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  HomeRepo create(Ref ref) {
-    return homeRepository(ref);
+  LoginRepo create(Ref ref) {
+    return loginRepository(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(HomeRepo value) {
+  Override overrideWithValue(LoginRepo value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<HomeRepo>(value),
+      providerOverride: $SyncValueProvider<LoginRepo>(value),
     );
   }
 }
 
-String _$homeRepositoryHash() => r'4c5ad2ec9bdc4494ccb0676509b2300718d3f2b8';
+String _$loginRepositoryHash() => r'77bfcebce7e9f15f240de32e2f6377d8be804e68';

@@ -1,29 +1,43 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sembast/sembast_io.dart';
 
 import 'local_base_services.dart';
 
-part 'sembast_services.g.dart';
+import '../../src/login/model/login_response.dart';
 
-@Riverpod(keepAlive: true)
-Future<SembastServices> sembastServices(Ref ref) async {
-  return SembastServices();
-}
+/// Synchronous provider so callers use [ref.read(sembastServicesProvider)] without .future.
+final sembastServicesProvider = Provider<SembastServices>((ref) => SembastServices());
 
 class SembastServices extends LocalBaseServices {
   String dbPath = 'sample_app.db';
   final _tokenStore = StoreRef<String, Map<String, dynamic>>('auth_tokens');
   final _userStatus = StoreRef<String, String>('user_status');
-  final _onboardedStatus = StoreRef<String, bool>('onboarded_status');
-  final _reminderStore = StoreRef<String, String>('reminder_shown');
-  late Database db;
+  final _userStore = StoreRef<String, Map<String, dynamic>>('user_data');
+  Database? _db;
+
+  Database get db {
+    final d = _db;
+    if (d == null) {
+      throw StateError(
+        'SembastServices not initialized. Call initialize() first.',
+      );
+    }
+    return d;
+  }
 
   @override
-  Future<void> deleteUserData() async {}
+  Future<void> deleteUserData() async {
+    try {
+      if (_db != null) {
+        await _userStatus.delete(_db!);
+        await _userStore.delete(_db!);
+      }
+    } catch (e) {
+      debugPrint('deleteUserData error: $e');
+    }
+  }
 
   @override
   Future<void> getUserData() async {}
@@ -31,7 +45,7 @@ class SembastServices extends LocalBaseServices {
   @override
   Future<void> initialize() async {
     final appDir = await getApplicationDocumentsDirectory();
-    db = await databaseFactoryIo.openDatabase('${appDir.path}/$dbPath');
+    _db = await databaseFactoryIo.openDatabase('${appDir.path}/$dbPath');
   }
 
   @override
@@ -59,12 +73,6 @@ class SembastServices extends LocalBaseServices {
   }
 
   @override
-  Future<bool> isNewUser() async {
-    final status = await _userStatus.record('isNewUser').get(db);
-    return status == 'true';
-  }
-
-  @override
   Future<String?> getAccessToken() async {
     try {
       final token = await _tokenStore.record('tokens').get(db);
@@ -87,9 +95,11 @@ class SembastServices extends LocalBaseServices {
   @override
   Future<bool> clearSembastDb() async {
     try {
-      await _userStatus.delete(db);
-      await _tokenStore.delete(db);
-      await _reminderStore.delete(db);
+      final d = _db;
+      if (d == null) return false;
+      await _userStatus.delete(d);
+      await _tokenStore.delete(d);
+      await _userStore.delete(d);
       return true;
     } catch (e) {
       return false;
@@ -97,43 +107,24 @@ class SembastServices extends LocalBaseServices {
   }
 
   @override
-  Future<void> updateOnboardedStatus(bool value) async {
+  Future<void> saveLoginResponse(LoginResponse response) async {
     try {
-      await _onboardedStatus.record('onboarded_status').put(db, value);
+      await _userStore.record('user_data').put(db, response.toJson());
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint('saveLoginResponse error: $e');
     }
   }
 
   @override
-  Future<bool> getOnboardedStatus() async {
+  Future<LoginResponse?> getLoginResponse() async {
     try {
-      final onboardedStatus = await _onboardedStatus
-          .record('onboarded_status')
-          .get(db);
-      return onboardedStatus ?? false;
+      final json = await _userStore.record('user_data').get(db);
+      if (json != null) {
+        return LoginResponse.fromJson(json);
+      }
+      return null;
     } catch (e) {
-      return false;
-    }
-  }
-
-  @override
-  Future<void> setLastReminderShown(String mealLabel, DateTime time) async {
-    try {
-      await _reminderStore.record(mealLabel).put(db, time.toIso8601String());
-    } catch (e) {
-      debugPrint('setLastReminderShown error: $e');
-    }
-  }
-
-  @override
-  Future<DateTime?> getLastReminderShown(String mealLabel) async {
-    try {
-      final iso = await _reminderStore.record(mealLabel).get(db);
-      if (iso == null) return null;
-      return DateTime.tryParse(iso);
-    } catch (e) {
-      debugPrint('getLastReminderShown error: $e');
+      debugPrint('getLoginResponse error: $e');
       return null;
     }
   }

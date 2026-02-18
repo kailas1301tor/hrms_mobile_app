@@ -1,3 +1,5 @@
+import '../../src/login/model/login_response.dart';
+
 // Base class for local data services
 abstract class LocalBaseServices {
   Future<void> initialize();
@@ -8,10 +10,7 @@ abstract class LocalBaseServices {
 
   Future<void> deleteUserData();
 
-  Future<void> saveTokens({
-    String? accessToken,
-    String? refreshToken,
-  });
+  Future<void> saveTokens({String? accessToken, String? refreshToken});
 
   Future<String?> getAccessToken();
 
@@ -21,13 +20,7 @@ abstract class LocalBaseServices {
 
   Future<void> saveUser({bool? isNewUser});
 
-  Future<bool> isNewUser();
+  Future<void> saveLoginResponse(LoginResponse response);
 
-  Future<void> updateOnboardedStatus(bool value);
-
-  Future<bool> getOnboardedStatus();
-
-  Future<void> setLastReminderShown(String mealLabel, DateTime time);
-
-  Future<DateTime?> getLastReminderShown(String mealLabel);
+  Future<LoginResponse?> getLoginResponse();
 }

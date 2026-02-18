@@ -1,11 +1,12 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../src/home/repo/home_repo.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/remote/network_services.dart';
+import '../src/login/repo/login_repo.dart';
 
 part 'repo_di.g.dart';
 
 @Riverpod(keepAlive: false)
-HomeRepo homeRepository(Ref ref) {
+LoginRepo loginRepository(Ref ref) {
   final networkServices = ref.read(networkServicesProvider);
-  return HomeRepoImpl(networkServices);
+  return LoginRepoImpl(networkServices);
 }

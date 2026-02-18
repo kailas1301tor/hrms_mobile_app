@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrms_mobile/res/styles/color_palette.dart';
 import 'package:hrms_mobile/res/styles/fonts/plus_jakarta_sans_font_palette.dart';
-import 'package:smooth_corner/smooth_corner.dart';
+import 'package:hrms_mobile/generated/assets.dart';
 
 class LoginHeader extends StatelessWidget {
   const LoginHeader({super.key});
@@ -11,20 +11,7 @@ class LoginHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SmoothContainer(
-          width: 80.w,
-          height: 80.w,
-          smoothness: 2,
-          borderRadius: BorderRadius.circular(20.r),
-          color: ColorPalette.primaryColor,
-          child: Center(
-            child: Icon(
-              Icons.business_center_outlined,
-              color: ColorPalette.white,
-              size: 40.w,
-            ),
-          ),
-        ),
+        Image.asset(Assets.pngLogo, width: 80.w, fit: BoxFit.contain),
         24.verticalSpace,
         RichText(
           text: TextSpan(

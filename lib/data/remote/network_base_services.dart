@@ -36,6 +36,13 @@ abstract class NetWorkBaseServices {
 
   Future<BaseResponse> patchRequest({
     required String endPoint,
+    dynamic parameters,
+    Map<String, dynamic>? queryParameters,
+    bool isFromAuth = false,
+  });
+
+  Future<BaseResponse> putRequest({
+    required String endPoint,
     Map<String, dynamic>? parameters,
     Map<String, dynamic>? queryParameters,
     bool isFromAuth = false,

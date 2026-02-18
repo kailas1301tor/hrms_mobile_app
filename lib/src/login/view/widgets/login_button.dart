@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hrms_mobile/src/login/notifier/login_notifier.dart';
 import 'package:hrms_mobile/src/main/view/main_screen.dart';
 import 'package:hrms_mobile/utils/common_widgets/primary_button.dart';
+import 'package:hrms_mobile/utils/routes/route_constants.dart';
 
-class LoginButton extends StatelessWidget {
+class LoginButton extends ConsumerWidget {
   const LoginButton({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loginState = ref.watch(loginProvider);
+
     return Padding(
       padding: EdgeInsets.only(top: 32.h),
       child: PrimaryButton(
         buttonText: 'SIGN IN TO SYSTEM',
-        isLoading: false,
+        isLoading: loginState.isLoading,
         onPressed: () {
-          // Handle login logic here
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const MainScreen()),
-          );
+          ref.read(loginProvider.notifier).login(() {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              RouteConstants.routeMainScreen,
+              (route) => false,
+            );
+          });
         },
       ),
     );

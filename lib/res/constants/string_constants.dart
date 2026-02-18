@@ -61,4 +61,6 @@ class Strings {
   static const navReport = "SALARY";
   static const navSettings = "EXIT";
   static const exitPressAgain = "Press back again to exit";
+  static const loginSuccessful = "Login Successful";
+  static const loginFailed = "Login Failed";
 }

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrms_mobile/res/styles/color_palette.dart';
 import 'package:hrms_mobile/res/styles/fonts/plus_jakarta_sans_font_palette.dart';
 import 'package:smooth_corner/smooth_corner.dart';
+import 'package:hrms_mobile/res/constants/app_constants.dart';
 
 class AdvanceCard extends StatelessWidget {
   const AdvanceCard({super.key});
@@ -51,7 +52,7 @@ class AdvanceCard extends StatelessWidget {
           ),
           16.verticalSpace,
           Text(
-            '\$ 5,000.00',
+            '${AppConstants.currency} 5,000.00',
             style: PlusJakartaSansFontPalette.base700(
               20,
               color: ColorPalette.primaryColorDark,

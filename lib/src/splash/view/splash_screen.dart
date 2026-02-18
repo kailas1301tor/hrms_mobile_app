@@ -1,13 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../data/local/sembast_services.dart';
 import '../../../generated/assets.dart';
+import '../../../res/constants/app_constants.dart';
 import '../../../res/styles/color_palette.dart';
 import '../../../utils/routes/route_constants.dart';
-import '../notifier/splash_notifier.dart';
-import 'dart:async';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -19,40 +21,51 @@ class SplashScreen extends ConsumerStatefulWidget {
 class _SplashScreenState extends ConsumerState<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _controller;
-  late SplashNotifier _splashNotifier;
 
   @override
   void initState() {
     super.initState();
-    _splashNotifier = ref.read(splashProvider.notifier);
 
-    // Simplified logo animation
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
 
-    // Start animations and initialize navigation after completion
     _controller.forward().then((_) => _initializeAndNavigate());
   }
 
+  /// All async work uses only this widget's ref (never the notifier's ref)
+  /// so we avoid UnmountedRefException when the provider is disposed mid-flow.
   Future<void> _initializeAndNavigate() async {
-    try {
-      await _splashNotifier.initialize();
-    } catch (_) {}
-    await _navigateToNextScreen();
-  }
+    if (!mounted) return;
+    final sembast = ref.read(sembastServicesProvider);
 
-  Future<void> _navigateToNextScreen() async {
+    try {
+      await sembast.initialize();
+    } catch (_) {}
+    if (!mounted) return;
+
+    AppConstants.accessToken = await sembast.getAccessToken() ?? '';
+    AppConstants.refreshToken = await sembast.getRefreshToken() ?? '';
+    if (!mounted) return;
+
     await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted) return;
 
+    final loginResponse = await sembast.getLoginResponse();
+    if (!mounted) return;
+
+    final targetRoute = loginResponse != null
+        ? RouteConstants.routeMainScreen
+        : RouteConstants.routeLoginScreen;
+
     Navigator.pushNamedAndRemoveUntil(
       context,
-      RouteConstants.routeLoginScreen,
-      (route) => false,
+      targetRoute,
+      (_) => false,
     );
   }
+
 
   @override
   void dispose() {

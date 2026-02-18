@@ -1,21 +1,31 @@
-import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:either_dart/either.dart';
+import 'package:flutter/material.dart';
+import 'package:hrms_mobile/utils/routes/route_constants.dart';
+import 'package:hrms_mobile/utils/routes/route_generator.dart';
+import 'package:logger/logger.dart';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../res/constants/app_constants.dart';
 import '../../utils/helpers/common_functions.dart';
+import '../local/sembast_services.dart';
 import 'network_base_services.dart';
 
 part 'network_services.g.dart';
 
 @Riverpod(keepAlive: true)
 NetworkServices networkServices(Ref ref) {
-  return NetworkServices();
+  return NetworkServices(ref);
 }
 
 class NetworkServices extends NetWorkBaseServices {
+  final Ref ref;
+
+  NetworkServices(this.ref);
   static const kConnectTimeOut = Duration(milliseconds: 60000);
   static const kReceiveTimeOut = Duration(milliseconds: 60000);
 
@@ -24,6 +34,17 @@ class NetworkServices extends NetWorkBaseServices {
     return getStatus(response);
   }
 
+  // ✦ Initialize Logger
+  var logger = Logger(
+    printer: PrettyPrinter(methodCount: 0, colors: true),
+    level: Level.debug,
+    output: ConsoleOutput(),
+  );
+
+  /* ┌──────────────────────────────┐
+     │ API Client: GET Request      │
+     │ Handles HTTP GET operations  │
+     └──────────────────────────────┘ */
   @override
   Future<BaseResponse> getRequest({
     required String endPoint,
@@ -32,6 +53,7 @@ class NetworkServices extends NetWorkBaseServices {
     bool isFromAuth = false,
   }) async {
     if (!(await isInternetAvailable())) {
+      logger.w('⚠ No Internet Available'); // Warning log with emoji
       throw ApiExceptions.noInternet();
     }
 
@@ -39,33 +61,90 @@ class NetworkServices extends NetWorkBaseServices {
       BaseOptions(
         baseUrl: AppConstants.baseURL,
         receiveDataWhenStatusError: true,
-        connectTimeout: kConnectTimeOut,
-        receiveTimeout: kReceiveTimeOut,
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Authorization":
+              "Bearer ${AppConstants.accessToken}", // ➜ Token for auth
+          "Content-Type": "application/json",
+        },
       ),
     );
 
     try {
+      logger.w(
+        '🌐 GET Request Initiated',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Info log with emoji
+      logger.d(
+        '🔗 URL: ${dio.options.baseUrl}$endPoint',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Debug log for URL
+      logger.d(
+        '🔑 Headers - API Key: ${dio.options.headers["Api-Key"]}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '🔒 Headers - Token: Bearer ${AppConstants.accessToken}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        'Params -  $queryParameters',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+
       Response response = await dio
           .get(endPoint, data: parameters, queryParameters: queryParameters)
-          .timeout(kConnectTimeOut);
+          .timeout(
+            kReceiveTimeOut,
+            onTimeout: () {
+              logger.e('⏳ Request Timed Out'); // Error log with emoji
+              throw ApiExceptions.oops();
+            },
+          );
+
+      logger.i('✅ Response Received - Status: ${response.statusCode}');
+      log('📋 Response Data:\n${prettyJson(response.data)}');
 
       return BaseResponse(statusCode: response.statusCode, data: response.data);
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+    } on DioException catch (error) {
+      logger.e('❌ Dio Error - Status: ${error.response?.statusCode}');
+      logger.e('📉 Error Data: ${error.response?.data}');
+
+      if (error.response?.statusCode == 401) {
+        logger.w('🔄 Unauthorized (401), logging out...');
+        _logout();
+        return BaseResponse(statusCode: 401, data: error.response?.data);
+      }
+      logger.e('📉 Error Data:\n${prettyJson(error.response?.data)}');
+
+      return BaseResponse(
+        statusCode: error.response?.statusCode,
+        data: error.response?.data,
+      );
     } catch (e) {
+      logger.e('💥 Unexpected Error: $e'); // Error log with emoji
       throw ApiExceptions.oops();
     }
   }
 
+  /* ┌──────────────────────────────┐
+     │ API Client: POST Request     │
+     │ Handles HTTP POST operations │
+     └──────────────────────────────┘ */
   @override
   Future<BaseResponse> postRequest({
     required String endPoint,
     Map<String, dynamic>? parameters,
     Map<String, dynamic>? queryParameters,
     bool isFromAuth = false,
+    Map<String, String>? extraHeaders,
   }) async {
     if (!(await isInternetAvailable())) {
+      logger.w('⚠ No Internet Connection'); // Warning with emoji
       throw ApiExceptions.noInternet();
     }
 
@@ -73,46 +152,642 @@ class NetworkServices extends NetWorkBaseServices {
       BaseOptions(
         baseUrl: AppConstants.baseURL,
         receiveDataWhenStatusError: true,
-        connectTimeout: kConnectTimeOut,
-        receiveTimeout: kReceiveTimeOut,
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          if (!isFromAuth && AppConstants.accessToken.isNotEmpty)
+            "Authorization":
+                "Bearer ${AppConstants.accessToken}", // ➜ Token for auth
+          "Content-Type": "application/json",
+          ...?extraHeaders,
+        },
       ),
     );
 
     try {
+      logger.w(
+        '🌐 POST Request Initiated',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Info log with emoji
+      logger.d(
+        '🔗 URL: ${dio.options.baseUrl}$endPoint',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Debug log for URL
+      logger.d(
+        '🔑 Headers - API Key: ${dio.options.headers["Api-Key"]}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '🔒 Headers - Token: Bearer ${AppConstants.accessToken}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '📦 Body: ${jsonEncode(parameters)}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Pretty print request body
+
       Response response = await dio
           .post(endPoint, data: parameters, queryParameters: queryParameters)
-          .timeout(kConnectTimeOut);
+          .timeout(
+            kReceiveTimeOut,
+            onTimeout: () {
+              logger.e('⏳ Request Timed Out'); // Error log with emoji
+              throw ApiExceptions.oops();
+            },
+          );
+
+      logger.i(
+        '✅ Response Received - Status: ${response.statusCode}',
+        stackTrace: StackTrace.empty,
+      );
+      log('📋 Response Data:\n${prettyJson(response.data)}');
 
       return BaseResponse(statusCode: response.statusCode, data: response.data);
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+    } on DioException catch (error) {
+      logger.e('❌ Dio Error - Status: ${error.response?.statusCode}');
+      logger.e('📉 Error Data:\n${prettyJson(error.response?.data)}');
+
+      if (error.response?.statusCode == 401) {
+        logger.w('🔄 Unauthorized (401), logging out...');
+        _logout();
+        return BaseResponse(statusCode: 401, data: error.response?.data);
+      }
+      return BaseResponse(
+        statusCode: error.response?.statusCode,
+        data: error.response?.data,
+      );
     } catch (e) {
+      logger.e('💥 Unexpected Error: $e'); // Error log with emoji
       throw ApiExceptions.oops();
     }
   }
 
+  /* ┌──────────────────────────────┐
+     │ API Client: Patch Request     │
+     │ Handles HTTP Patch operations │
+     └──────────────────────────────┘ */
   @override
-  Future<BaseResponse> getRequestWithUrl({required String url}) async {
+  Future<BaseResponse> patchRequest({
+    required String endPoint,
+    // Map<String, dynamic>? parameters,
+    //Changed parameters to dynamic (so it can accept either Map<String, dynamic> or FormData).
+    dynamic parameters,
+    Map<String, dynamic>? queryParameters,
+    bool isFromAuth = false,
+  }) async {
     if (!(await isInternetAvailable())) {
+      logger.w('⚠ No Internet Connection'); // Warning with emoji
       throw ApiExceptions.noInternet();
     }
 
     final dio = Dio(
       BaseOptions(
+        baseUrl: AppConstants.baseURL,
         receiveDataWhenStatusError: true,
-        connectTimeout: kConnectTimeOut,
-        receiveTimeout: kReceiveTimeOut,
+        headers: {
+          if (!isFromAuth && AppConstants.accessToken.isNotEmpty)
+            "Authorization":
+                "Bearer ${AppConstants.accessToken}", // ➜ Token for auth
+          "Content-Type": "application/json",
+        },
       ),
     );
 
     try {
-      Response response = await dio.get(url).timeout(kConnectTimeOut);
+      logger.w(
+        '🌐 POST Request Initiated',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Info log with emoji
+      logger.d(
+        '🔗 URL: ${dio.options.baseUrl}$endPoint',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Debug log for URL
+      logger.d(
+        '🔑 Headers - API Key: ${dio.options.headers["Api-Key"]}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '🔒 Headers - Token: Bearer ${AppConstants.accessToken}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      if (parameters is FormData) {
+        logger.d('📦 Body (FormData):');
+        for (final field in parameters.fields) {
+          logger.d('📝 ${field.key} = ${field.value}');
+        }
+        for (final file in parameters.files) {
+          logger.d('📁 ${file.key} = ${file.value.filename}');
+        }
+      } else {
+        logger.d(
+          '📦 Body: ${jsonEncode(parameters)}',
+          stackTrace: StackTrace.empty,
+          time: null,
+        );
+      }
+
+      Response response = await dio
+          .patch(endPoint, data: parameters, queryParameters: queryParameters)
+          .timeout(
+            kReceiveTimeOut,
+            onTimeout: () {
+              logger.e('⏳ Request Timed Out'); // Error log with emoji
+              throw ApiExceptions.oops();
+            },
+          );
+
+      logger.i(
+        '✅ Response Received - Status: ${response.statusCode}',
+        stackTrace: StackTrace.empty,
+      );
+      log('📋 Response Data:\n${prettyJson(response.data)}');
+
       return BaseResponse(statusCode: response.statusCode, data: response.data);
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+    } on DioException catch (error) {
+      logger.e('❌ Dio Error - Status: ${error.response?.statusCode}');
+      logger.e('📉 Error Data:\n${prettyJson(error.response?.data)}');
+      if (error.response?.statusCode == 401) {
+        logger.w('🔄 Unauthorized (401), logging out...');
+        _logout();
+        return BaseResponse(statusCode: 401, data: error.response?.data);
+      }
+      return BaseResponse(
+        statusCode: error.response?.statusCode,
+        data: error.response?.data,
+      );
     } catch (e) {
+      logger.e('💥 Unexpected Error: $e'); // Error log with emoji
       throw ApiExceptions.oops();
+    }
+  }
+
+  /* ┌──────────────────────────────┐
+     │ API Client: PUT Request      │
+     │ Handles HTTP PUT operations  │
+     └──────────────────────────────┘ */
+  @override
+  Future<BaseResponse> putRequest({
+    required String endPoint,
+    Map<String, dynamic>? parameters,
+    Map<String, dynamic>? queryParameters,
+    bool isFromAuth = false,
+  }) async {
+    if (!(await isInternetAvailable())) {
+      logger.w('⚠ No Internet Connection');
+      throw ApiExceptions.noInternet();
+    }
+
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: AppConstants.baseURL,
+        receiveDataWhenStatusError: true,
+        headers: {
+          if (!isFromAuth && AppConstants.accessToken.isNotEmpty)
+            "Authorization": "Bearer ${AppConstants.accessToken}",
+          "Content-Type": "application/json",
+        },
+      ),
+    );
+
+    try {
+      logger.w('🌐 PUT Request Initiated');
+      logger.d('🔗 URL: ${dio.options.baseUrl}$endPoint');
+      logger.d(
+        '📦 Body: ${jsonEncode(parameters)}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+
+      Response response = await dio
+          .put(endPoint, data: parameters, queryParameters: queryParameters)
+          .timeout(
+            kReceiveTimeOut,
+            onTimeout: () {
+              logger.e('⏳ Request Timed Out');
+              throw ApiExceptions.oops();
+            },
+          );
+
+      logger.i('✅ Response Received - Status: ${response.statusCode}');
+      log('📋 Response Data:\n${prettyJson(response.data)}');
+
+      return BaseResponse(statusCode: response.statusCode, data: response.data);
+    } on DioException catch (error) {
+      logger.e('❌ Dio Error - Status: ${error.response?.statusCode}');
+      logger.e('📉 Error Data:\n${prettyJson(error.response?.data)}');
+
+      if (error.response?.statusCode == 401) {
+        logger.w('🔄 Unauthorized (401), logging out...');
+        _logout();
+        return BaseResponse(statusCode: 401, data: error.response?.data);
+      }
+      return BaseResponse(
+        statusCode: error.response?.statusCode,
+        data: error.response?.data,
+      );
+    } catch (e) {
+      logger.e('💥 Unexpected Error: $e');
+      throw ApiExceptions.oops();
+    }
+  }
+
+  /* ┌──────────────────────────────┐
+     │ API Client: Delete Request    │
+     │ Handles HTTP Delete operations │
+     └──────────────────────────────┘ */
+  @override
+  Future<BaseResponse> deleteRequest({
+    required String endPoint,
+    Map<String, dynamic>? parameters,
+    Map<String, dynamic>? queryParameters,
+    bool isFromAuth = false,
+  }) async {
+    if (!(await isInternetAvailable())) {
+      logger.w('⚠ No Internet Connection'); // Warning with emoji
+      throw ApiExceptions.noInternet();
+    }
+
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: AppConstants.baseURL,
+        receiveDataWhenStatusError: true,
+        headers: {
+          if (!isFromAuth && AppConstants.accessToken.isNotEmpty)
+            "Authorization":
+                "Bearer ${AppConstants.accessToken}", // ➜ Token for auth
+          "Content-Type": "application/json",
+        },
+      ),
+    );
+
+    try {
+      logger.w(
+        '🌐 DELETE Request Initiated',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Info log with emoji
+      logger.d(
+        '🔗 URL: ${dio.options.baseUrl}$endPoint',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Debug log for URL
+      logger.d(
+        '🔑 Headers - API Key: ${dio.options.headers["Api-Key"]}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '🔒 Headers - Token: Bearer ${AppConstants.accessToken}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '📦 Body: ${jsonEncode(parameters)}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Pretty print request body
+
+      Response response = await dio
+          .delete(endPoint, data: parameters, queryParameters: queryParameters)
+          .timeout(
+            kReceiveTimeOut,
+            onTimeout: () {
+              logger.e('⏳ Request Timed Out'); // Error log with emoji
+              throw ApiExceptions.oops();
+            },
+          );
+
+      logger.i(
+        '✅ Response Received - Status: ${response.statusCode}',
+        stackTrace: StackTrace.empty,
+      );
+      log('📋 Response Data:\n${prettyJson(response.data)}');
+
+      return BaseResponse(statusCode: response.statusCode, data: response.data);
+    } on DioException catch (error) {
+      logger.e('❌ Dio Error - Status: ${error.response?.statusCode}');
+      logger.e('📉 Error Data:\n${prettyJson(error.response?.data)}');
+
+      if (error.response?.statusCode == 401) {
+        logger.w('🔄 Unauthorized (401), logging out...');
+        _logout();
+        return BaseResponse(statusCode: 401, data: error.response?.data);
+      }
+
+      return BaseResponse(
+        statusCode: error.response?.statusCode,
+        data: error.response?.data,
+      );
+    } catch (e) {
+      logger.e('💥 Unexpected Error: $e'); // Error log with emoji
+      throw ApiExceptions.oops();
+    }
+  }
+
+  /* ┌────────────────────────────────────┐
+     │ API Client: Multipart Request      │
+     │ Handles multipart/form-data POST   │
+     └────────────────────────────────────┘ */
+  @override
+  Future<BaseResponse> multiPartRequest({
+    required String endPoint,
+    required FormData formFields,
+    Function(int, int)? onSendProgress,
+    CancelToken? cancelToken,
+  }) async {
+    if (!(await isInternetAvailable())) {
+      logger.w('⚠ No Internet Available'); // Warning with emoji
+      throw ApiExceptions.noInternet();
+    }
+
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: AppConstants.baseURL,
+        receiveDataWhenStatusError: true,
+        headers: {
+          "Authorization":
+              "Bearer ${AppConstants.accessToken}", // ➜ Token for auth
+          "Content-Type": "application/json",
+        },
+      ),
+    );
+
+    try {
+      logger.w('🌐 Multipart Request Initiated'); // Info log
+      logger.d(
+        '🔗 URL: ${dio.options.baseUrl}$endPoint',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '🔑 Headers - API Key: ${dio.options.headers["Api-Key"]}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '🌍 Headers - Country: ${dio.options.headers["X-App-Country"]}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '🔒 Headers - Token: Bearer ${AppConstants.accessToken}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '📦 Form Data: ${formFields.fields}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Log form fields
+
+      Response response = await dio
+          .post(
+            endPoint,
+            data: formFields,
+            onSendProgress: onSendProgress,
+            cancelToken: cancelToken,
+          )
+          .timeout(
+            kReceiveTimeOut,
+            onTimeout: () {
+              logger.e('⏳ Request Timed Out'); // Error log with emoji
+              throw ApiExceptions.oops();
+            },
+          );
+
+      logger.i(
+        '✅ Response Received - Status: ${response.statusCode}',
+        stackTrace: StackTrace.empty,
+      );
+      log('📋 Response Data:\n${prettyJson(response.data)}');
+
+      return BaseResponse(statusCode: response.statusCode, data: response.data);
+    } on DioException catch (error) {
+      logger.e('❌ Dio Error - Status: ${error.response?.statusCode}');
+      logger.e('📉 Error Data:\n${prettyJson(error.response?.data)}');
+
+      return BaseResponse(
+        statusCode: error.response?.statusCode,
+        data: error.response?.data,
+      );
+    } catch (e) {
+      logger.e('💥 Unexpected Error: $e'); // Error log with emoji
+      throw ApiExceptions.oops();
+    }
+  }
+
+  /* ┌────────────────────────────────────┐
+     │ API Client: Post File Request      │
+     │ Uploads files with progress        │
+     └────────────────────────────────────┘ */
+  @override
+  Future<BaseResponse> postFile({
+    required String endPoint,
+    required FormData formFields,
+    required void Function(int, int)? onSendProgress,
+    bool isFromAuth = false,
+  }) async {
+    if (!(await isInternetAvailable())) {
+      logger.w('⚠ No Internet Available'); // Warning with emoji
+      throw ApiExceptions.noInternet();
+    }
+
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: AppConstants.baseURL,
+        receiveDataWhenStatusError: true,
+        headers: {
+          "Authorization":
+              "Bearer ${AppConstants.accessToken}", // ➜ Token for auth
+          "Content-Type": "application/json",
+        },
+      ),
+    );
+
+    try {
+      logger.w(
+        '📤 File Upload Request Initiated',
+      ); // Info log with upload emoji
+      logger.d('🔗 URL: ${dio.options.baseUrl}$endPoint');
+      logger.d(
+        '🔑 Headers - API Key: ${dio.options.headers["Api-Key"]}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '🌍 Headers - Country: ${dio.options.headers["X-App-Country"]}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '🔒 Headers - Token: Bearer ${AppConstants.accessToken}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '📦 Form Data: ${formFields.fields}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Log form fields
+
+      Response response = await dio
+          .post(
+            endPoint,
+            data: formFields,
+            onSendProgress: (sent, total) {
+              logger.d(
+                '📊 Upload Progress: ${((sent / total) * 100).toStringAsFixed(0)}%',
+              );
+              if (onSendProgress != null) onSendProgress(sent, total);
+            },
+          )
+          .timeout(
+            kReceiveTimeOut,
+            onTimeout: () {
+              logger.e('⏳ Request Timed Out'); // Error log with emoji
+              throw ApiExceptions.oops();
+            },
+          );
+
+      logger.f(
+        '✅ Response Received - Status: ${response.statusCode}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      log('📋 Response Data:\n${prettyJson(response.data)}');
+
+      return BaseResponse(statusCode: response.statusCode, data: response.data);
+    } on DioException catch (error) {
+      logger.e('❌ Dio Error - Status: ${error.response?.statusCode}');
+      logger.e('📉 Error Data:\n${prettyJson(error.response?.data)}');
+
+      if (error.response?.statusCode == 401) {
+        logger.w('🔄 Unauthorized (401), logging out...');
+        _logout();
+        return BaseResponse(statusCode: 401, data: error.response?.data);
+      }
+
+      return BaseResponse(
+        statusCode: error.response?.statusCode,
+        data: error.response?.data,
+      );
+    } catch (e) {
+      logger.e('💥 Unexpected Error: $e'); // Error log with emoji
+      throw ApiExceptions.oops();
+    }
+  }
+
+  @override
+  Either<ResponseError, BaseResponse> getStatus(BaseResponse response) {
+    switch (response.statusCode) {
+      case 201:
+      case 200:
+      case 204:
+        return Right(response);
+      case 401:
+        debugPrint(response.data);
+        return Left(
+          ResponseError(
+            key: ApiErrorTypes.unAuthorized,
+            message: "UnAuthorized",
+            response: response.data,
+          ),
+        );
+      case 403:
+        return Left(
+          ResponseError(
+            key: ApiErrorTypes.unAuthorized,
+            message: "UnAuthorized",
+            response: response.data,
+          ),
+        );
+      case 404:
+        return Left(
+          ResponseError(
+            key: ApiErrorTypes.notFound,
+            message: "Not Found",
+            response: response.data,
+          ),
+        );
+      case 422:
+        return Left(
+          ResponseError(
+            key: ApiErrorTypes.unknown,
+            message: "Unknown",
+            response: response.data,
+          ),
+        );
+      case 500:
+        return Left(
+          ResponseError(
+            key: ApiErrorTypes.internalServerError,
+            message: "Internal Server Error",
+            response: response.data,
+          ),
+        );
+      case 503 || 502 || 504:
+        return Left(
+          ResponseError(
+            key: ApiErrorTypes.serviceUnavailable,
+            message: "Service Unavailable",
+            response: response.data,
+          ),
+        );
+      default:
+        return Left(
+          ResponseError(
+            key: ApiErrorTypes.unknown,
+            message: "Unknown",
+            response: response.data,
+          ),
+        );
+    }
+  }
+
+  @override
+  Future<Either<ResponseError, dynamic>> parseJson(
+    BaseResponse response,
+  ) async {
+    try {
+      return Right(response.data);
+    } catch (e) {
+      return Left(
+        ResponseError(
+          key: ApiErrorTypes.jsonParsing,
+          message: "Failed on json Parsing",
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<ResponseError, BaseResponse>> safe(
+    Future<BaseResponse> request,
+  ) async {
+    try {
+      return Right(await request);
+    } on ApiExceptions catch (error) {
+      return Left(
+        ResponseError(
+          key: error.errorType,
+          message: error.message,
+          response: error.response,
+        ),
+      );
+    } catch (e) {
+      return Left(
+        ResponseError(
+          key: ApiErrorTypes.unknown,
+          message: "Unknown Error : $e",
+        ),
+      );
     }
   }
 
@@ -122,181 +797,228 @@ class NetworkServices extends NetWorkBaseServices {
     Map<String, dynamic>? parameters,
     bool isFromAuth = false,
   }) async {
-    throw UnimplementedError();
+    if (!(await isInternetAvailable())) {
+      logger.w('⚠ No Internet Connection'); // Warning with emoji
+      throw ApiExceptions.noInternet();
+    }
+
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: AppConstants.baseURL,
+        receiveDataWhenStatusError: true,
+        headers: {
+          "Authorization":
+              "Bearer ${AppConstants.accessToken}", // ➜ Token for auth
+          "Content-Type": "application/json",
+        },
+      ),
+    );
+
+    try {
+      logger.w(
+        '🌐 POST Request Initiated',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Info log with emoji
+      logger.d(
+        '🔗 URL: ${dio.options.baseUrl}$endPoint',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Debug log for URL
+      logger.d(
+        '🔑 Headers - API Key: ${dio.options.headers["Api-Key"]}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '🔒 Headers - Token: Bearer ${AppConstants.accessToken}',
+        stackTrace: StackTrace.empty,
+        time: null,
+      );
+      logger.d(
+        '📦 Body: $parameters',
+        stackTrace: StackTrace.empty,
+        time: null,
+      ); // Pretty print request body
+
+      Response response = await dio
+          .post(endPoint, data: parameters)
+          .timeout(
+            kReceiveTimeOut,
+            onTimeout: () {
+              logger.e('⏳ Request Timed Out'); // Error log with emoji
+              throw ApiExceptions.oops();
+            },
+          );
+
+      logger.i(
+        '✅ Response Received - Status: ${response.statusCode}',
+        stackTrace: StackTrace.empty,
+      );
+      log('📋 Response Data:\n${prettyJson(response.data)}');
+
+      return BaseResponse(statusCode: response.statusCode, data: response.data);
+    } on DioException catch (error) {
+      logger.e('❌ Dio Error - Status: ${error.response?.statusCode}');
+      logger.e('📉 Error Data:\n${prettyJson(error.response?.data)}');
+
+      return BaseResponse(
+        statusCode: error.response?.statusCode,
+        data: error.response?.data,
+      );
+    } catch (e) {
+      logger.e('💥 Unexpected Error: $e'); // Error log with emoji
+      throw ApiExceptions.oops();
+    }
   }
 
   @override
-  Future<BaseResponse> patchRequest({
-    required String endPoint,
-    Map<String, dynamic>? parameters,
-    Map<String, dynamic>? queryParameters,
-    bool isFromAuth = false,
-  }) async {
-    throw UnimplementedError();
-  }
+  Future<BaseResponse> getRequestWithUrl({required String url}) async {
+    if (!(await isInternetAvailable())) {
+      logger.w('⚠ No Internet Available'); // Warning log with emoji
+      throw ApiExceptions.noInternet();
+    }
+    logger.i('✅ BASE URL ->: $url');
+    try {
+      Response response = await Dio()
+          .get(url)
+          .timeout(
+            kReceiveTimeOut,
+            onTimeout: () {
+              logger.e('⏳ Request Timed Out'); // Error log with emoji
+              throw ApiExceptions.oops();
+            },
+          );
 
-  @override
-  Future<BaseResponse> deleteRequest({
-    required String endPoint,
-    Map<String, dynamic>? parameters,
-    Map<String, dynamic>? queryParameters,
-    bool isFromAuth = false,
-  }) async {
-    throw UnimplementedError();
-  }
+      logger.i('✅ Response Received - Status: ${response.statusCode}');
+      log('📋 Response Data:\n${prettyJson(response.data)}');
 
-  @override
-  Future<BaseResponse> multiPartRequest({
-    required String endPoint,
-    required FormData formFields,
-    Function(int, int)? onSendProgress,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnimplementedError();
-  }
+      return BaseResponse(statusCode: response.statusCode, data: response.data);
+    } on DioException catch (error) {
+      logger.e('❌ Dio Error - Status: ${error.response?.statusCode}');
+      logger.e('📉 Error Data:\n${prettyJson(error.response?.data)}');
 
-  @override
-  Future<BaseResponse> postFile({
-    required String endPoint,
-    required FormData formFields,
-    required void Function(int, int)? onSendProgress,
-    bool isFromAuth = false,
-  }) async {
-    throw UnimplementedError();
+      return BaseResponse(
+        statusCode: error.response?.statusCode,
+        data: error.response?.data,
+      );
+    } catch (e) {
+      logger.e('💥 Unexpected Error: $e'); // Error log with emoji
+      throw ApiExceptions.oops();
+    }
   }
 
   @override
   Future<bool> geAccessTokenWithRefreshToken() async {
+    if (AppConstants.refreshToken.isEmpty) {
+      logger.e('🚫 No refresh token available');
+      return false;
+    }
+    try {
+      // logger.i('🔄 Calling refresh token API...');
+      // final response = safe(
+      //   postRequest(
+      //     endPoint: ApiConstants.,
+      //     parameters: {'refresh': AppConstants.refreshToken},
+      //     isFromAuth: true,
+      //   ),
+      // );
+      // response
+      //     .fold(
+      //       (left) {
+      //         logger.e(left.message);
+      //         return false;
+      //       },
+      //       (right) {
+      //         logger.i('✅ Access token refreshed');
+      //         AppConstants.accessToken = right.data['access'] ?? '';
+      //         // container
+      //         //     .read(sembastServicesProvider)
+      //         //     .saveTokens(
+      //         //       accessToken: right.data['access'] ?? "",
+      //         //       refreshToken: AppConstants.refreshToken,
+      //         //     );
+      //         return true;
+      //       },
+      //     )
+      //     .catchError((e) {
+      //       logger.e(e);
+      //       return false;
+      //     });
+    } catch (e) {
+      logger.e('💥 Unexpected Error: $e');
+      return false;
+    }
     return false;
   }
 
-  @override
-  Either<ResponseError, BaseResponse> getStatus(BaseResponse response) {
-    if (response.statusCode == null) {
-      return Left(
-        ResponseError(key: ApiErrorTypes.unknown, message: 'Unknown error'),
-      );
-    }
+  Future<void> _logout() async {
+    logger.e('❌ Failed to refresh token, returning error response...');
 
-    if (response.statusCode! >= 200 && response.statusCode! < 300) {
-      return Right(response);
-    }
+    AppConstants.accessToken = '';
+    AppConstants.refreshToken = '';
+    final sembast = ref.read(sembastServicesProvider);
+    await sembast.clearSembastDb();
 
-    ApiErrorTypes errorType;
-    switch (response.statusCode) {
-      case 400:
-        errorType = ApiErrorTypes.badRequest;
-        break;
-      case 401:
-        errorType = ApiErrorTypes.unAuthorized;
-        break;
-      case 404:
-        errorType = ApiErrorTypes.notFound;
-        break;
-      case 500:
-        errorType = ApiErrorTypes.internalServerError;
-        break;
-      case 503:
-        errorType = ApiErrorTypes.serviceUnavailable;
-        break;
-      default:
-        errorType = ApiErrorTypes.badResponse;
+    if (navigatorKey.currentState != null) {
+      executeAfterFrame(() {
+        if (AppConstants.currentRoute == RouteConstants.routeLoginScreen) {
+          return;
+        }
+        Navigator.pushNamedAndRemoveUntil(
+          navigatorKey.currentState!.context,
+          RouteConstants.routeLoginScreen,
+          (_) => false,
+        );
+      });
     }
-
-    return Left(
-      ResponseError(
-        key: errorType,
-        message: 'HTTP ${response.statusCode}',
-        response: response.data,
-      ),
-    );
   }
+}
 
-  @override
-  Future<Either<ResponseError, BaseResponse>> safe(
-    Future<BaseResponse> request,
-  ) async {
+const reset = '\x1B[0m';
+const orange = '\x1B[38;5;208m';
+const white = '\x1B[37m'; // string values
+const fluorescentGreen = '\x1B[38;5;46m';
+const purple = '\x1B[35m'; // list color
+const yellow = '\x1B[33m'; // boolean values
+
+String prettyJson(dynamic data, {int indent = 0}) {
+  final indentSpace = '  ' * indent;
+
+  if (data is String) {
     try {
-      final response = await request;
-      return Right(response);
-    } on ApiExceptions catch (e) {
-      return Left(
-        ResponseError(
-          key: e.errorType,
-          message: e.message,
-          response: e.response,
-        ),
-      );
-    } catch (e) {
-      return Left(
-        ResponseError(key: ApiErrorTypes.unknown, message: e.toString()),
-      );
+      data = json.decode(data);
+    } catch (_) {
+      return '$white"$data"$reset';
     }
   }
 
-  @override
-  Future<Either<ResponseError, dynamic>> parseJson(
-    BaseResponse response,
-  ) async {
-    try {
-      if (response.data is String) {
-        final decoded = json.decode(response.data);
-        return Right(decoded);
-      }
-      return Right(response.data);
-    } catch (e) {
-      return Left(
-        ResponseError(
-          key: ApiErrorTypes.jsonParsing,
-          message: 'Failed to parse JSON: $e',
-        ),
+  if (data is Map) {
+    final buffer = StringBuffer();
+    buffer.writeln('$indentSpace{');
+    data.forEach((key, value) {
+      final coloredKey = '$orange"$key"$reset';
+      buffer.write(
+        '$indentSpace  $coloredKey: ${prettyJson(value, indent: indent + 1)},\n',
       );
+    });
+    buffer.write('$indentSpace}');
+    return buffer.toString();
+  } else if (data is List) {
+    final buffer = StringBuffer();
+    buffer.writeln('$purple$indentSpace[$reset');
+    for (var item in data) {
+      buffer.writeln('${prettyJson(item, indent: indent + 1)},');
     }
-  }
-
-  ApiExceptions _handleDioError(DioException error) {
-    switch (error.type) {
-      case DioExceptionType.connectionTimeout:
-        return ApiExceptions(
-          message: 'Connection timeout',
-          errorType: ApiErrorTypes.connectionTimeout,
-        );
-      case DioExceptionType.sendTimeout:
-        return ApiExceptions(
-          message: 'Send timeout',
-          errorType: ApiErrorTypes.sendTimeout,
-        );
-      case DioExceptionType.receiveTimeout:
-        return ApiExceptions(
-          message: 'Receive timeout',
-          errorType: ApiErrorTypes.receiveTimeout,
-        );
-      case DioExceptionType.badCertificate:
-        return ApiExceptions(
-          message: 'Bad certificate',
-          errorType: ApiErrorTypes.badCertificate,
-        );
-      case DioExceptionType.badResponse:
-        return ApiExceptions(
-          message: 'Bad response',
-          errorType: ApiErrorTypes.badResponse,
-          response: error.response?.data,
-        );
-      case DioExceptionType.cancel:
-        return ApiExceptions(
-          message: 'Request cancelled',
-          errorType: ApiErrorTypes.cancel,
-        );
-      case DioExceptionType.connectionError:
-        return ApiExceptions(
-          message: 'Connection error',
-          errorType: ApiErrorTypes.connectionError,
-        );
-      default:
-        return ApiExceptions(
-          message: 'Unknown error',
-          errorType: ApiErrorTypes.unknown,
-        );
-    }
+    buffer.write('$purple$indentSpace]$reset');
+    return buffer.toString();
+  } else if (data is num) {
+    return '$fluorescentGreen$data$reset';
+  } else if (data is bool) {
+    return '$yellow$data$reset';
+  } else if (data == null) {
+    return 'null';
+  } else {
+    return '$white"$data"$reset';
   }
 }

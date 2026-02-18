@@ -10,8 +10,5 @@ sealed class HomeState with _$HomeState {
   const factory HomeState({
     @Default(false) bool isLoading,
     @Default(false) bool buttonLoader,
-    @Default([]) List<TourModel> tours,
-    @Default([]) List<TripModel> trips,
-    String? errorMessage,
   }) = _HomeState;
 }
