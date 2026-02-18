@@ -31,7 +31,7 @@ extension OpacityColorExtension on Color {
       opacity >= 0.0 && opacity <= 1.0,
       'Opacity must be between 0.0 and 1.0',
     );
-    return withOpacity(opacity);
+    return withValues(alpha: opacity);
   }
 }
 

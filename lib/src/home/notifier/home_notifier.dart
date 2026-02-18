@@ -42,7 +42,7 @@ class HomeNotifier extends _$HomeNotifier {
       (error) {
         state = state.copyWith(
           isLoading: false,
-          errorMessage: error?.message ?? 'Failed to load trips',
+          errorMessage: error.message ?? 'Failed to load trips',
         );
       },
       (trips) {

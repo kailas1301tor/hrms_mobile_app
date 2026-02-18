@@ -6,7 +6,6 @@ import 'package:hrms_mobile/utils/helpers/extensions.dart';
 
 import '../../res/styles/color_palette.dart';
 import '../../res/styles/fonts/inter_font_palette.dart';
-import 'shimmer_loaders.dart';
 
 Widget buttonLoader({double? loadingRadius, Color? color}) =>
     CupertinoActivityIndicator(

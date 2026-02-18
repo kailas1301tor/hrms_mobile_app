@@ -15,6 +15,8 @@ import '../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
 import '../../../utils/helpers/common_functions.dart';
 import '../../../res/styles/app_theme.dart';
 
+import 'widgets/custom_common_app_bar.dart';
+
 // Manual Notifier instead of riverpod_generator for simplicity
 class SelectedTabNotifier extends Notifier<int> {
   @override
@@ -92,6 +94,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: AppTheme.systemOverlayStyle,
         child: Scaffold(
+          appBar: const CustomCommonAppBar(),
           backgroundColor: ColorPalette.white,
           body: IndexedStack(index: selectedTab, children: pages),
           bottomNavigationBar: BottomNavigationSection(

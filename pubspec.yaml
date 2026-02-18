@@ -85,7 +85,6 @@ flutter:
     - assets/images/png/
     - assets/images/svg/
     - assets/fonts/
-    - assets/lottie/
     - assets/gif/
 
   # Fonts

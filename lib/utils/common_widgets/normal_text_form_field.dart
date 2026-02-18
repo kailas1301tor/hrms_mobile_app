@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 import '../../res/styles/color_palette.dart';
 import '../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
-import '../helpers/common_functions.dart';
 
 class CommonTextFormField extends StatefulWidget {
   const CommonTextFormField({

@@ -10,11 +10,7 @@ class ListItemShimmer extends StatelessWidget {
   final double? height;
   final EdgeInsets? padding;
 
-  const ListItemShimmer({
-    super.key,
-    this.height,
-    this.padding,
-  });
+  const ListItemShimmer({super.key, this.height, this.padding});
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +64,7 @@ class CardItemShimmer extends StatelessWidget {
   final double? height;
   final EdgeInsets? margin;
 
-  const CardItemShimmer({
-    super.key,
-    this.height,
-    this.margin,
-  });
+  const CardItemShimmer({super.key, this.height, this.margin});
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +75,7 @@ class CardItemShimmer extends StatelessWidget {
       decoration: BoxDecoration(
         color: ColorPalette.white,
         borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: ColorPalette.grey.withOpacity(0.2)),
+        border: Border.all(color: ColorPalette.grey.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -167,7 +159,7 @@ class GridItemShimmer extends StatelessWidget {
           decoration: BoxDecoration(
             color: ColorPalette.white,
             borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(color: ColorPalette.grey.withOpacity(0.2)),
+            border: Border.all(color: ColorPalette.grey.withValues(alpha: 0.2)),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -224,7 +216,8 @@ class ListViewShimmer extends StatelessWidget {
     return ListView.builder(
       padding: padding ?? EdgeInsets.all(16.w),
       itemCount: itemCount,
-      itemBuilder: itemBuilder ??
+      itemBuilder:
+          itemBuilder ??
           (context, index) {
             return ListItemShimmer();
           },
@@ -237,11 +230,7 @@ class CardListShimmer extends StatelessWidget {
   final int itemCount;
   final EdgeInsets? padding;
 
-  const CardListShimmer({
-    super.key,
-    this.itemCount = 5,
-    this.padding,
-  });
+  const CardListShimmer({super.key, this.itemCount = 5, this.padding});
 
   @override
   Widget build(BuildContext context) {
@@ -385,4 +374,3 @@ class ShimmerContainer extends StatelessWidget {
     );
   }
 }
-
