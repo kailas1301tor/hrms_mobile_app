@@ -1,33 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 import '../../../../../res/styles/color_palette.dart';
 import '../../../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
-import '../../notifier/summary_notifier.dart';
+import '../../../../../res/enums/enums.dart';
+import 'package:hrms_mobile/src/admin/attendance/notifier/attendance_notifier.dart';
+import 'package:shimmer/shimmer.dart';
 
-class AdminSummaryStatsGrid extends ConsumerWidget {
-  const AdminSummaryStatsGrid({super.key});
+class AdminAttendanceStatsGrid extends ConsumerWidget {
+  const AdminAttendanceStatsGrid({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final summaryState = ref.watch(
-      summaryProvider.select((s) => (s.stats, s.error, s.isLoading)),
+    final attendanceState = ref.watch(
+      attendanceProvider.select((s) => (s.summary, s.error, s.loaderState)),
     );
-    final stats = summaryState.$1;
+    final summary = attendanceState.$1;
 
-    if (summaryState.$3 && stats == null) {
-      return const _AdminStatsShimmer();
-    }
-
-    if (summaryState.$2 != null && stats == null) {
-      return Center(
-        child: Text(
-          summaryState.$2 ?? 'Something went wrong',
-          style: PlusJakartaSansFontPalette.base600(14, color: Colors.red),
-        ),
-      );
+    if (attendanceState.$3 == LoaderState.loading && summary == null) {
+      return const _AdminAttendanceStatsShimmer();
     }
 
     return GridView.count(
@@ -40,25 +32,25 @@ class AdminSummaryStatsGrid extends ConsumerWidget {
       children: [
         _AdminStatCard(
           label: "PRESENT",
-          value: "${stats?.present ?? 0}",
+          value: "${summary?.present ?? 0}",
           stripeColor: ColorPalette.primaryColor,
           valueColor: ColorPalette.primaryColor,
         ),
         _AdminStatCard(
           label: "ABSENT",
-          value: "${stats?.absent ?? 0}",
+          value: "${summary?.absent ?? 0}",
           stripeColor: ColorPalette.fFF0000,
           valueColor: ColorPalette.fFF0000,
         ),
         _AdminStatCard(
           label: "LATE ARRIVALS",
-          value: "${stats?.late ?? 0}",
+          value: "${summary?.late ?? 0}",
           stripeColor: ColorPalette.fFF7C34,
           valueColor: ColorPalette.fFF7C34,
         ),
         _AdminStatCard(
-          label: "PENDING",
-          value: "${stats?.pendingRequests ?? 0}",
+          label: "ON LEAVE",
+          value: "${summary?.onLeave ?? 0}",
           stripeColor: const Color(0xFFC0C7CD),
           valueColor: ColorPalette.f101828,
         ),
@@ -91,7 +83,7 @@ class _AdminStatCard extends StatelessWidget {
         ),
         shadows: [
           BoxShadow(
-            color: ColorPalette.black.withValues(alpha: 0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             offset: const Offset(0, 1),
             blurRadius: 16,
           ),
@@ -127,8 +119,8 @@ class _AdminStatCard extends StatelessWidget {
   }
 }
 
-class _AdminStatsShimmer extends StatelessWidget {
-  const _AdminStatsShimmer();
+class _AdminAttendanceStatsShimmer extends StatelessWidget {
+  const _AdminAttendanceStatsShimmer();
 
   @override
   Widget build(BuildContext context) {
@@ -140,24 +132,27 @@ class _AdminStatsShimmer extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       childAspectRatio: 1.6,
       children: List.generate(4, (index) {
-        return SmoothContainer(
-          smoothness: 1,
-          borderRadius: BorderRadius.circular(28.r),
-          color: const Color(0xFFF1F5F9), // Branded neutral background
-          child: Shimmer.fromColors(
-            baseColor: const Color(0xFFE2E8F0),
-            highlightColor: const Color(0xFFF8FAFC),
-            child: SmoothContainer(
-              margin: EdgeInsets.only(bottom: 6.h),
+        return Container(
+          decoration: ShapeDecoration(
+            color: const Color(0xFFE2E8F0),
+            shape: SmoothRectangleBorder(
+              borderRadius: BorderRadius.circular(28.r),
               smoothness: 1,
-              borderRadius: BorderRadius.circular(23.r),
-              color: ColorPalette.white,
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+            ),
+          ),
+          child: SmoothContainer(
+            margin: EdgeInsets.only(bottom: 6.h),
+            smoothness: 1,
+            borderRadius: BorderRadius.circular(23.r),
+            color: ColorPalette.white,
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+            child: Shimmer.fromColors(
+              baseColor: const Color(0xFFE2E8F0),
+              highlightColor: const Color(0xFFF8FAFC),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Label Bar
                   Container(
                     width: 80.w,
                     height: 10.h,
@@ -167,7 +162,6 @@ class _AdminStatsShimmer extends StatelessWidget {
                     ),
                   ),
                   12.verticalSpace,
-                  // Value Bar
                   Container(
                     width: 50.w,
                     height: 32.h,

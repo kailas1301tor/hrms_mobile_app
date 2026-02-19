@@ -49,4 +49,4 @@ final class NetworkServicesProvider
   }
 }
 
-String _$networkServicesHash() => r'60bc7d982ce1fee5f53198c2c64d4eb7f80ac5b1';
+String _$networkServicesHash() => r'517def081a05387694a845bad5289f164ee87c8c';

@@ -14,6 +14,7 @@ import '../../../utils/helpers/common_functions.dart';
 import '../../../res/styles/app_theme.dart';
 
 import 'widgets/custom_common_app_bar.dart';
+import '../../login/notifier/login_notifier.dart';
 
 // Manual Notifier instead of riverpod_generator for simplicity
 class SelectedTabNotifier extends Notifier<int> {
@@ -53,17 +54,20 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   void _showLogoutPopup() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => CommonPopup(
         title: 'Logout Confirmation',
         message: 'Are you sure you want to logout from the application?',
         actionButtonText: 'Logout',
         cancelButtonText: 'Cancel',
         onActionPressed: () {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            RouteConstants.routeLoginScreen,
-            (route) => false,
-          );
+          ref.read(loginProvider.notifier).logout(() {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              RouteConstants.routeLoginScreen,
+              (route) => false,
+            );
+          });
         },
       ),
     );

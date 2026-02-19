@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrms_mobile/src/login/notifier/login_notifier.dart';
-import 'package:hrms_mobile/src/main/view/main_screen.dart';
 import 'package:hrms_mobile/utils/common_widgets/primary_button.dart';
 import 'package:hrms_mobile/utils/routes/route_constants.dart';
 
@@ -19,15 +18,27 @@ class LoginButton extends ConsumerWidget {
         buttonText: 'SIGN IN TO SYSTEM',
         isLoading: loginState.isLoading,
         onPressed: () {
-          ref.read(loginProvider.notifier).login(() {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              RouteConstants.routeMainScreen,
-              (route) => false,
-            );
+          ref.read(loginProvider.notifier).login((role) {
+            _navigateToMainScreen(role, context);
           });
         },
       ),
     );
+  }
+
+  void _navigateToMainScreen(String? role, BuildContext context) {
+    if (role?.toLowerCase() == 'admin') {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        RouteConstants.routeAdminMainScreen,
+        (route) => false,
+      );
+    } else if (role?.toLowerCase() == 'staff ') {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        RouteConstants.routeMainScreen,
+        (route) => false,
+      );
+    }
   }
 }

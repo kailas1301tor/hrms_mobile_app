@@ -4,72 +4,27 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 import '../../../../../res/styles/color_palette.dart';
 import '../../../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
-import '../../provider/attendance_provider.dart';
+import '../../../../../res/enums/enums.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:hrms_mobile/src/admin/attendance/notifier/attendance_notifier.dart';
 
 class AdminAttendanceList extends ConsumerWidget {
   const AdminAttendanceList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filterState = ref.watch(attendanceFilterProvider);
+    final attendanceState = ref.watch(
+      attendanceProvider.select(
+        (s) => (s.records, s.error, s.loaderState, s.isLoadMore),
+      ),
+    );
+    final records = attendanceState.$1;
 
-    final List<Map<String, dynamic>> allItems = [
-      {
-        "name": "Ahmed Mansoor",
-        "branch": "Dubai HQ",
-        "status": "LATE",
-        "displayStatus": "LATE ENTRY",
-        "time": "08:15 AM",
-        "initial": "A",
-        "color": const Color(0XFFFFF7ED), // Light orange
-        "textColor": const Color(0XFFC2410C),
-        "isLate": true,
-      },
-      {
-        "name": "Sarah Jenkins",
-        "branch": "Abu Dhabi",
-        "status": "ABSENT",
-        "displayStatus": "ABSENT",
-        "time": "-",
-        "initial": "S",
-        "color": const Color(0XFFFEF2F2), // Light red
-        "textColor": const Color(0XFFEF4444),
-        "isLate": false,
-      },
-      {
-        "name": "Rajesh Kumar",
-        "branch": "Sharjah",
-        "status": "PRESENT",
-        "displayStatus": "PRESENT",
-        "time": "07:55 AM",
-        "initial": "R",
-        "color": const Color(0XFFF0FDF4), // Light green
-        "textColor": const Color(0XFF15803D),
-        "isLate": false,
-      },
-      {
-        "name": "Fatima Al Ali",
-        "branch": "Dubai HQ",
-        "status": "LATE",
-        "displayStatus": "LATE ENTRY",
-        "time": "08:02 AM",
-        "initial": "F",
-        "color": const Color(0XFFFFF7ED),
-        "textColor": const Color(0XFFC2410C),
-        "isLate": true,
-      },
-    ];
+    if (attendanceState.$3 == LoaderState.loading && records.isEmpty) {
+      return const _AttendanceListShimmer();
+    }
 
-    final filteredItems = allItems.where((item) {
-      final matchesBranch =
-          filterState.branch == "All Branches (UAE)" ||
-          item["branch"] == filterState.branch;
-      final matchesStatus =
-          filterState.status == "ALL" || item["status"] == filterState.status;
-      return matchesBranch && matchesStatus;
-    }).toList();
-
-    if (filteredItems.isEmpty) {
+    if (records.isEmpty) {
       return Center(
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 40.h),
@@ -94,6 +49,163 @@ class AdminAttendanceList extends ConsumerWidget {
       );
     }
 
+    return Column(
+      children: [
+        SmoothContainer(
+          smoothness: 2,
+          borderRadius: BorderRadius.circular(24.r),
+          color: ColorPalette.white,
+          side: BorderSide(
+            color: ColorPalette.primaryColor.withValues(alpha: 0.1),
+            width: 1.5.w,
+          ),
+          child: ListView.separated(
+            shrinkWrap: true,
+            padding: EdgeInsets.all(16.w),
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: records.length,
+            separatorBuilder: (context, index) => Divider(
+              color: const Color(0xFFF1F5F9),
+              thickness: 1,
+              height: 24.h,
+            ),
+            itemBuilder: (context, index) {
+              final item = records[index];
+              final String status = (item.status ?? "ABSENT").toUpperCase();
+              final String checkIn = item.checkIn ?? "-";
+
+              Color bgColor = const Color(0XFFFEF2F2);
+              Color textColor = const Color(0XFFEF4444);
+              bool isLate = status == 'LATE';
+              bool isPresent = status == 'PRESENT';
+
+              if (isPresent) {
+                bgColor = const Color(0XFFF0FDF4);
+                textColor = const Color(0XFF15803D);
+              } else if (isLate) {
+                bgColor = const Color(0XFFFFF7ED);
+                textColor = const Color(0XFFC2410C);
+              } else if (status == 'ABSENT') {
+                bgColor = const Color(0XFFFEF2F2);
+                textColor = const Color(0XFFEF4444);
+              } else if (status == 'ON LEAVE' || status == 'ON_LEAVE') {
+                bgColor = const Color(0XFFF5F3FF);
+                textColor = const Color(0XFF7E22CE);
+              }
+
+              final String name = item.name ?? "Unknown";
+              final String initial = name.isNotEmpty
+                  ? name[0].toUpperCase()
+                  : "?";
+              final String branch = item.department ?? "HQ";
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SmoothContainer(
+                    width: 52.w,
+                    height: 52.w,
+                    smoothness: 2,
+                    color: bgColor,
+                    borderRadius: BorderRadius.circular(16.r),
+                    alignment: Alignment.center,
+                    child: Text(
+                      initial,
+                      style: PlusJakartaSansFontPalette.base700(
+                        20,
+                        color: textColor,
+                      ),
+                    ),
+                  ),
+                  16.horizontalSpace,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: PlusJakartaSansFontPalette.base700(
+                                  16,
+                                  color: const Color(0xFF0F172A),
+                                ),
+                              ),
+                            ),
+                            if (isLate) ...[
+                              6.horizontalSpace,
+                              Icon(
+                                Icons.error_outline,
+                                size: 14.sp,
+                                color: const Color(0XFFF97316),
+                              ),
+                            ],
+                          ],
+                        ),
+                        4.verticalSpace,
+                        Text(
+                          branch,
+                          style: PlusJakartaSansFontPalette.base600(
+                            12,
+                            color: const Color(0XFF94A3B8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      SmoothContainer(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
+                        smoothness: 2,
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(6.r),
+                        child: Text(
+                          status,
+                          style: PlusJakartaSansFontPalette.base700(
+                            9,
+                            color: textColor,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      8.verticalSpace,
+                      Text(
+                        checkIn,
+                        style: PlusJakartaSansFontPalette.base700(
+                          12,
+                          color: const Color(0XFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        if (attendanceState.$4)
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.h),
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+      ],
+    );
+  }
+}
+
+class _AttendanceListShimmer extends StatelessWidget {
+  const _AttendanceListShimmer();
+
+  @override
+  Widget build(BuildContext context) {
     return SmoothContainer(
       smoothness: 2,
       borderRadius: BorderRadius.circular(24.r),
@@ -102,156 +214,81 @@ class AdminAttendanceList extends ConsumerWidget {
         color: ColorPalette.primaryColor.withValues(alpha: 0.1),
         width: 1.5.w,
       ),
-      child: ListView.separated(
-        shrinkWrap: true,
-        padding: EdgeInsets.symmetric(vertical: 8.h),
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: filteredItems.length,
-        separatorBuilder: (context, index) => Divider(
-          color: const Color(0xFFF1F5F9),
-          thickness: 1,
-          indent: 16.w,
-          endIndent: 16.w,
-        ),
-        itemBuilder: (context, index) {
-          final item = filteredItems[index];
-          final isLate = item["status"] == "LATE";
-          final isPresent = item["status"] == "PRESENT";
-
-          return Padding(
-            padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 12.h),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      padding: EdgeInsets.all(16.w),
+      child: Shimmer.fromColors(
+        baseColor: const Color(0xFFE2E8F0),
+        highlightColor: const Color(0xFFF8FAFC),
+        child: ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: 6,
+          separatorBuilder: (context, index) => Divider(
+            color: const Color(0xFFF1F5F9),
+            thickness: 1,
+            height: 24.h,
+          ),
+          itemBuilder: (context, index) {
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Avatar
                 SmoothContainer(
                   width: 52.w,
                   height: 52.w,
                   smoothness: 2,
-                  color: item["color"] as Color,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(16.r),
-                  alignment: Alignment.center,
-                  child: Text(
-                    item["initial"] as String,
-                    style: PlusJakartaSansFontPalette.base700(
-                      20,
-                      color: item["textColor"] as Color,
-                    ),
-                  ),
                 ),
                 16.horizontalSpace,
-                // Name and Branch
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              item["name"] as String,
-                              maxLines: 2,
-                              overflow: TextOverflow.fade,
-                              style: PlusJakartaSansFontPalette.base700(
-                                17,
-                                color: const Color(0xFF0F172A),
-                              ),
-                            ),
-                          ),
-                          if (isLate) ...[
-                            6.horizontalSpace,
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4.0),
-                              child: Icon(
-                                Icons.error_outline,
-                                size: 16.sp,
-                                color: const Color(0XFFF97316),
-                              ),
-                            ),
-                            2.horizontalSpace,
-                          ],
-                        ],
+                      Container(
+                        width: 140.w,
+                        height: 14.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
                       ),
-                      6.verticalSpace,
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            size: 16.sp,
-                            color: const Color(0XFF94A3B8),
-                          ),
-                          4.horizontalSpace,
-                          Expanded(
-                            child: Text(
-                              item["branch"] as String,
-                              overflow: TextOverflow.ellipsis,
-                              style: PlusJakartaSansFontPalette.base600(
-                                13,
-                                color: const Color(0XFF94A3B8),
-                              ),
-                            ),
-                          ),
-                        ],
+                      8.verticalSpace,
+                      Container(
+                        width: 80.w,
+                        height: 10.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                // Status and Time
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    // Status Badge
-                    SmoothContainer(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10.w,
-                        vertical: 5.h,
-                      ),
-                      smoothness: 2,
-                      color: item["color"] as Color,
-                      borderRadius: BorderRadius.circular(8.r),
-                      child: Text(
-                        item["displayStatus"] as String,
-                        style: PlusJakartaSansFontPalette.base700(
-                          10,
-                          color: item["textColor"] as Color,
-                          letterSpacing: 0.5,
-                        ),
+                    Container(
+                      width: 45.w,
+                      height: 18.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(6.r),
                       ),
                     ),
-                    12.verticalSpace,
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          size: 14.sp,
-                          color: isPresent
-                              ? const Color(0XFF22C55E)
-                              : isLate
-                              ? const Color(0XFFF97316)
-                              : const Color(0XFF94A3B8),
-                        ),
-                        6.horizontalSpace,
-                        Text(
-                          item["time"] as String,
-                          style: PlusJakartaSansFontPalette.base700(
-                            13,
-                            color: isPresent
-                                ? const Color(0XFF22C55E)
-                                : isLate
-                                ? const Color(0XFFF97316)
-                                : const Color(0XFF94A3B8),
-                          ),
-                        ),
-                      ],
+                    8.verticalSpace,
+                    Container(
+                      width: 35.w,
+                      height: 10.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
                     ),
                   ],
                 ),
               ],
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

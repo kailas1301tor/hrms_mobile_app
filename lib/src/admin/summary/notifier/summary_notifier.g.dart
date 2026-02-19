@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'home_notifier.dart';
+part of 'summary_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,52 +9,52 @@ part of 'home_notifier.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(HomeNotifier)
-const homeProvider = HomeNotifierProvider._();
+@ProviderFor(SummaryNotifier)
+const summaryProvider = SummaryNotifierProvider._();
 
-final class HomeNotifierProvider
-    extends $NotifierProvider<HomeNotifier, HomeState> {
-  const HomeNotifierProvider._()
+final class SummaryNotifierProvider
+    extends $NotifierProvider<SummaryNotifier, SummaryState> {
+  const SummaryNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'homeProvider',
+        name: r'summaryProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$homeNotifierHash();
+  String debugGetCreateSourceHash() => _$summaryNotifierHash();
 
   @$internal
   @override
-  HomeNotifier create() => HomeNotifier();
+  SummaryNotifier create() => SummaryNotifier();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(HomeState value) {
+  Override overrideWithValue(SummaryState value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<HomeState>(value),
+      providerOverride: $SyncValueProvider<SummaryState>(value),
     );
   }
 }
 
-String _$homeNotifierHash() => r'a1b3a45886707bf9521ed882bc39a350465cbd1c';
+String _$summaryNotifierHash() => r'0e3e2723d4bdb196a7be2b95545e8cf75e507e7d';
 
-abstract class _$HomeNotifier extends $Notifier<HomeState> {
-  HomeState build();
+abstract class _$SummaryNotifier extends $Notifier<SummaryState> {
+  SummaryState build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<HomeState, HomeState>;
+    final ref = this.ref as $Ref<SummaryState, SummaryState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<HomeState, HomeState>,
-              HomeState,
+              AnyNotifier<SummaryState, SummaryState>,
+              SummaryState,
               Object?,
               Object?
             >;

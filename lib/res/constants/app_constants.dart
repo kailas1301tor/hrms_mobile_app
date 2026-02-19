@@ -1,6 +1,6 @@
 class AppConstants {
   static const String currency = "AED";
-  static const String baseURL = "https://hrms-project-76oq.onrender.com/";
+  static const String baseURL = "https://hrms-project-mob-test.onrender.com/";
 
   static String api = "/api";
 
@@ -22,4 +22,8 @@ class AppConstants {
 
   // Add your API endpoints here
   static String login = "$prefix$auth/login";
+  static String mobileStats = "$prefix/dashboard/mobile-stats";
+  static String pendingApprovals = "$prefix/dashboard/pending-approvals";
+  static String attendance = "$prefix/attendance";
+  static String logout = "$prefix$auth/logout";
 }

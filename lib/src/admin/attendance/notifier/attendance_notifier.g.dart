@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'home_notifier.dart';
+part of 'attendance_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,52 +9,53 @@ part of 'home_notifier.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(HomeNotifier)
-const homeProvider = HomeNotifierProvider._();
+@ProviderFor(AttendanceNotifier)
+const attendanceProvider = AttendanceNotifierProvider._();
 
-final class HomeNotifierProvider
-    extends $NotifierProvider<HomeNotifier, HomeState> {
-  const HomeNotifierProvider._()
+final class AttendanceNotifierProvider
+    extends $NotifierProvider<AttendanceNotifier, AttendanceState> {
+  const AttendanceNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'homeProvider',
+        name: r'attendanceProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$homeNotifierHash();
+  String debugGetCreateSourceHash() => _$attendanceNotifierHash();
 
   @$internal
   @override
-  HomeNotifier create() => HomeNotifier();
+  AttendanceNotifier create() => AttendanceNotifier();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(HomeState value) {
+  Override overrideWithValue(AttendanceState value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<HomeState>(value),
+      providerOverride: $SyncValueProvider<AttendanceState>(value),
     );
   }
 }
 
-String _$homeNotifierHash() => r'a1b3a45886707bf9521ed882bc39a350465cbd1c';
+String _$attendanceNotifierHash() =>
+    r'92e88fdff06fa10cef99e567b8d01c2d85fed9d6';
 
-abstract class _$HomeNotifier extends $Notifier<HomeState> {
-  HomeState build();
+abstract class _$AttendanceNotifier extends $Notifier<AttendanceState> {
+  AttendanceState build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<HomeState, HomeState>;
+    final ref = this.ref as $Ref<AttendanceState, AttendanceState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<HomeState, HomeState>,
-              HomeState,
+              AnyNotifier<AttendanceState, AttendanceState>,
+              AttendanceState,
               Object?,
               Object?
             >;

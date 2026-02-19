@@ -13,6 +13,10 @@ import '../../../../res/styles/app_theme.dart';
 import '../../../../res/styles/color_palette.dart';
 import '../../../../utils/helpers/common_functions.dart';
 
+import '../../../../utils/common_widgets/common_popup.dart';
+import '../../../../utils/routes/route_constants.dart';
+import '../../../login/notifier/login_notifier.dart';
+
 class SelectedTabNotifier extends Notifier<int> {
   @override
   int build() => 0;
@@ -44,6 +48,28 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
     showCustomToast(
       message: Strings.exitPressAgain,
       duration: const Duration(seconds: 2),
+    );
+  }
+
+  void _showLogoutPopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => CommonPopup(
+        title: 'Logout Confirmation',
+        message: 'Are you sure you want to logout from the application?',
+        actionButtonText: 'Logout',
+        cancelButtonText: 'Cancel',
+        onActionPressed: () {
+          ref.read(loginProvider.notifier).logout(() {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              RouteConstants.routeLoginScreen,
+              (route) => false,
+            );
+          });
+        },
+      ),
     );
   }
 
@@ -100,8 +126,13 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
           ),
           bottomNavigationBar: AdminBottomNavigationSection(
             selectedTab: selectedTab,
-            onTabSelected: (index) =>
-                ref.read(adminSelectedTabProvider.notifier).set(index),
+            onTabSelected: (index) {
+              if (index == 3) {
+                _showLogoutPopup();
+              } else {
+                ref.read(adminSelectedTabProvider.notifier).set(index);
+              }
+            },
           ),
         ),
       ),

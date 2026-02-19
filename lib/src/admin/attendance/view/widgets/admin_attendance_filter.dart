@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hrms_mobile/src/admin/attendance/notifier/attendance_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 import '../../../../../res/styles/color_palette.dart';
 import '../../../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
-import '../../provider/attendance_provider.dart';
-import '../../../common/widgets/admin_branch_selector.dart';
 
 class AdminAttendanceFilter extends ConsumerStatefulWidget {
   const AdminAttendanceFilter({super.key});
@@ -20,25 +19,25 @@ class _AdminAttendanceFilterState extends ConsumerState<AdminAttendanceFilter> {
 
   @override
   Widget build(BuildContext context) {
-    final filterState = ref.watch(attendanceFilterProvider);
+    final attendanceState = ref.watch(
+      attendanceProvider.select((s) => (s.status, s.error)),
+    );
 
     return Column(
       children: [
-        const AdminBranchSelector(),
+        // const AdminBranchSelector(),
         16.verticalSpace,
         // Status Filter Chips
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: _filters.map((filter) {
-            final isSelected = filterState.status == filter;
+            final isSelected = attendanceState.$1 == filter;
             return Expanded(
               child: Padding(
                 padding: EdgeInsets.only(right: filter == "LATE" ? 0 : 8.w),
                 child: GestureDetector(
                   onTap: () {
-                    ref
-                        .read(attendanceFilterProvider.notifier)
-                        .setStatus(filter);
+                    ref.read(attendanceProvider.notifier).updateStatus(filter);
                   },
                   child: SmoothContainer(
                     smoothness: 2,

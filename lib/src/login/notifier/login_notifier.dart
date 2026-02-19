@@ -11,7 +11,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'login_notifier.g.dart';
 
-@riverpod
+@Riverpod(name: 'loginProvider')
 class LoginNotifier extends _$LoginNotifier {
   LoginRepo get loginRepo => ref.read(loginRepositoryProvider);
 
@@ -57,7 +57,7 @@ class LoginNotifier extends _$LoginNotifier {
     return emailError == null && passwordError == null;
   }
 
-  Future<void> login(VoidCallback onSuccess) async {
+  Future<void> login(Function(String?) onSuccess) async {
     if (!validateFields()) return;
 
     state = state.copyWith(
@@ -88,8 +88,39 @@ class LoginNotifier extends _$LoginNotifier {
           await sembast.saveLoginResponse(response);
         }
         showCustomToast(message: Strings.loginSuccessful, isSuccess: true);
-        onSuccess();
+        onSuccess(response.role);
       },
     );
+  }
+
+  Future<void> logout(VoidCallback onDone) async {
+    // Capture refs before async gap
+    final sembast = ref.read(sembastServicesProvider);
+    state = state.copyWith(isLoading: true);
+
+    final result = await loginRepo.logout();
+
+    result.fold(
+      (error) {
+        // Even if API fails, we should clear local data and logout
+        _clearLocalAndLogout(onDone, sembast);
+      },
+      (response) {
+        _clearLocalAndLogout(onDone, sembast);
+        showCustomToast(
+          message: response['message'] ?? "Logged out successfully",
+          isSuccess: true,
+        );
+      },
+    );
+  }
+
+  Future<void> _clearLocalAndLogout(
+    VoidCallback onDone,
+    SembastServices sembast,
+  ) async {
+    AppConstants.accessToken = "";
+    await sembast.clearSembastDb();
+    onDone();
   }
 }

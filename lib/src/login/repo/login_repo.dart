@@ -9,6 +9,8 @@ abstract class LoginRepo {
     String email,
     String password,
   );
+
+  Future<Either<ResponseError, Map<String, dynamic>>> logout();
 }
 
 class LoginRepoImpl extends LoginRepo {
@@ -31,5 +33,17 @@ class LoginRepoImpl extends LoginRepo {
         .thenRight(services.checkHttpStatus)
         .thenRight(services.parseJson)
         .mapRight((right) => LoginResponse.fromJson(right));
+  }
+
+  @override
+  Future<Either<ResponseError, Map<String, dynamic>>> logout() {
+    return services
+        .safe(services.postRequest(endPoint: AppConstants.logout))
+        .thenRight(services.checkHttpStatus)
+        .thenRight(
+          (response) => services
+              .parseJson(response)
+              .then((value) => value.map((r) => r as Map<String, dynamic>)),
+        );
   }
 }

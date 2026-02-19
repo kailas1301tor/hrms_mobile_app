@@ -56,16 +56,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!mounted) return;
 
     final targetRoute = loginResponse != null
-        ? RouteConstants.routeMainScreen
+        ? _getTargetRoute(loginResponse.role)
         : RouteConstants.routeLoginScreen;
 
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      targetRoute,
-      (_) => false,
-    );
+    Navigator.pushNamedAndRemoveUntil(context, targetRoute, (_) => false);
   }
 
+  String _getTargetRoute(String? role) {
+    if (role?.toLowerCase() == 'admin') {
+      return RouteConstants.routeAdminMainScreen;
+    } else if (role?.toLowerCase() == 'staff') {
+      return RouteConstants.routeMainScreen;
+    }
+    return RouteConstants.routeLoginScreen;
+  }
 
   @override
   void dispose() {
