@@ -167,11 +167,18 @@ class _CommonSwitchStateState extends State<CommonSwitchState> {
 class _DefaultShimmerLoader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: CupertinoActivityIndicator(
-        color: ColorPalette.primaryColor,
-        radius: 20.r,
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: CupertinoActivityIndicator(
+            color: ColorPalette.primaryColor,
+            radius: 20.r,
+          ),
+        ),
+      ],
     );
   }
 }

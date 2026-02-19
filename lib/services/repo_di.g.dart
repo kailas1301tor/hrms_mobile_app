@@ -50,6 +50,54 @@ final class LoginRepositoryProvider
 
 String _$loginRepositoryHash() => r'77bfcebce7e9f15f240de32e2f6377d8be804e68';
 
+@ProviderFor(adminRequestsRepository)
+const adminRequestsRepositoryProvider = AdminRequestsRepositoryProvider._();
+
+final class AdminRequestsRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AdminRequestsRepo,
+          AdminRequestsRepo,
+          AdminRequestsRepo
+        >
+    with $Provider<AdminRequestsRepo> {
+  const AdminRequestsRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'adminRequestsRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$adminRequestsRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<AdminRequestsRepo> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AdminRequestsRepo create(Ref ref) {
+    return adminRequestsRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AdminRequestsRepo value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AdminRequestsRepo>(value),
+    );
+  }
+}
+
+String _$adminRequestsRepositoryHash() =>
+    r'463d35344fb93bdda0a0b81fa4804d892f5f026c';
+
 @ProviderFor(summaryRepository)
 const summaryRepositoryProvider = SummaryRepositoryProvider._();
 

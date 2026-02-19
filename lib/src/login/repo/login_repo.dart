@@ -26,6 +26,7 @@ class LoginRepoImpl extends LoginRepo {
     return services
         .safe(
           services.postRequest(
+            isFromAuth: false,
             endPoint: AppConstants.login,
             parameters: {"email": email, "password": password},
           ),

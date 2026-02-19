@@ -84,4 +84,48 @@ class Validators {
     }
     return null;
   }
+
+  /// Validates interest rate (%). Required, non-negative number, max 100.
+  static String? validateInterestRate(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Interest rate is required';
+    }
+    final rate = num.tryParse(value.trim());
+    if (rate == null) {
+      return 'Please enter a valid number';
+    }
+    if (rate < 0) {
+      return 'Interest rate cannot be negative';
+    }
+    if (rate > 100) {
+      return 'Interest rate cannot exceed 100%';
+    }
+    return null;
+  }
+
+  /// Validates repayment period in months. Required, positive integer (e.g. 1–120).
+  static String? validateRepaymentPeriod(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Repayment period is required';
+    }
+    final period = int.tryParse(value.trim());
+    if (period == null) {
+      return 'Please enter a valid number of months';
+    }
+    if (period < 1) {
+      return 'Repayment period must be at least 1 month';
+    }
+    if (period > 120) {
+      return 'Repayment period cannot exceed 120 months';
+    }
+    return null;
+  }
+
+  /// Validates rejection reason. Required.
+  static String? validateRejectionReason(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Rejection reason is required';
+    }
+    return null;
+  }
 }

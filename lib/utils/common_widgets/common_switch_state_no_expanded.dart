@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrms_mobile/utils/helpers/extensions.dart';
@@ -5,7 +6,6 @@ import 'package:hrms_mobile/utils/helpers/extensions.dart';
 import '../../res/enums/enums.dart';
 import '../../res/styles/color_palette.dart';
 import '../../res/styles/fonts/inter_font_palette.dart';
-
 
 class CommonSwitchStateNoExpanded extends StatefulWidget {
   final LoaderState loaderState;
@@ -104,9 +104,11 @@ class _CommonSwitchStateNoExpandedState
   //<=========loader state widget========>/
   Widget get loader =>
       widget.loader ??
-      const Align(
-        alignment: Alignment.center,
-        child: CircularProgressIndicator(),
+      Center(
+        child: CupertinoActivityIndicator(
+          color: ColorPalette.primaryColor,
+          radius: 20.r,
+        ),
       );
 
   //<=========NoData state widget========>/

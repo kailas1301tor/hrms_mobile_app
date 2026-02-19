@@ -1,107 +1,105 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../../utils/common_widgets/adaptive_refresh_indicator.dart';
-import 'widgets/admin_request_card.dart';
-import 'widgets/admin_request_tab_bar.dart';
+import 'package:hrms_mobile/src/admin/requests/notifier/admin_requests_notifier.dart';
+import 'package:hrms_mobile/utils/common_widgets/adaptive_refresh_indicator.dart';
 
-class AdminRequestsScreen extends StatefulWidget {
+import 'widgets/admin_request_tab_bar.dart';
+import 'widgets/advance_requests_list_view.dart';
+import 'widgets/leave_requests_list_view.dart';
+import 'widgets/loan_requests_list_view.dart';
+
+class AdminRequestsScreen extends ConsumerStatefulWidget {
   const AdminRequestsScreen({super.key});
 
   @override
-  State<AdminRequestsScreen> createState() => _AdminRequestsScreenState();
+  ConsumerState<AdminRequestsScreen> createState() =>
+      _AdminRequestsScreenState();
 }
 
-class _AdminRequestsScreenState extends State<AdminRequestsScreen> {
-  String _selectedTab = "LEAVE";
+class _AdminRequestsScreenState extends ConsumerState<AdminRequestsScreen> {
+  final ScrollController _scrollController = ScrollController();
+  static const _loadMoreThreshold = 200.0;
 
-  final Map<String, List<Map<String, dynamic>>> _dummyData = {
-    "LEAVE": [
-      {
-        "name": "Ahmed Mansoor",
-        "id": "L-9982",
-        "branch": "DUBAI HQ",
-        "initial": "A",
-        "requestType": "Annual Leave",
-        "date": "2024-05-20",
-        "reason": "Travel to home country",
-        "status": "PENDING",
-        "type": "LEAVE",
-      },
-      {
-        "name": "Fatima Al Ali",
-        "id": "L-8871",
-        "branch": "DUBAI HQ",
-        "initial": "F",
-        "requestType": "Sick Leave",
-        "date": "2024-05-18",
-        "reason": "Medical appointment",
-        "status": "APPROVED",
-        "type": "LEAVE",
-      },
-    ],
-    "ADVANCE": [
-      {
-        "name": "Sarah Jenkins",
-        "id": "L-4412",
-        "branch": "ABU DHABI",
-        "initial": "S",
-        "requestType": "Salary Advance",
-        "date": "2024-05-21",
-        "amount": "2,500",
-        "reason": "School fees payment",
-        "status": "PENDING",
-        "type": "ADVANCE",
-      },
-    ],
-    "LOAN": [
-      {
-        "name": "Rajesh Kumar",
-        "id": "L-2231",
-        "branch": "SHARJAH",
-        "initial": "R",
-        "requestType": "Personal Loan",
-        "date": "2024-05-19",
-        "amount": "15,000",
-        "reason": "Car down payment",
-        "status": "PENDING",
-        "type": "LOAN",
-      },
-    ],
-  };
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(adminRequestsProvider.notifier).fetchLeaveRequests();
+      ref.read(adminRequestsProvider.notifier).fetchAdvanceRequests();
+      ref.read(adminRequestsProvider.notifier).fetchLoanRequests();
+    });
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final position = _scrollController.position;
+    if (position.pixels < position.maxScrollExtent - _loadMoreThreshold) return;
+    final s = ref.read(adminRequestsProvider);
+    final notifier = ref.read(adminRequestsProvider.notifier);
+    if (s.selectedTab == 'LEAVE') {
+      final hasMore =
+          s.leaveTotalPages == null || s.leavePage < s.leaveTotalPages!;
+      if (hasMore && !s.leaveLoadingMore) notifier.loadMoreLeaveRequests();
+    } else if (s.selectedTab == 'ADVANCE') {
+      final hasMore =
+          s.advanceTotalPages == null || s.advancePage < s.advanceTotalPages!;
+      if (hasMore && !s.advanceLoadingMore) notifier.loadMoreAdvanceRequests();
+    } else if (s.selectedTab == 'LOAN') {
+      final hasMore =
+          s.loanTotalPages == null || s.loanPage < s.loanTotalPages!;
+      if (hasMore && !s.loanLoadingMore) notifier.loadMoreLoanRequests();
+    }
+  }
 
   Future<void> _onRefresh() async {
-    await Future.delayed(const Duration(seconds: 1));
+    final selectedTab = ref.read(
+      adminRequestsProvider.select((s) => s.selectedTab),
+    );
+    final notifier = ref.read(adminRequestsProvider.notifier);
+    if (selectedTab == 'LEAVE') {
+      await notifier.fetchLeaveRequests();
+    } else if (selectedTab == 'ADVANCE') {
+      await notifier.fetchAdvanceRequests();
+    } else {
+      await notifier.fetchLoanRequests();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final requests = _dummyData[_selectedTab] ?? [];
+    final selectedTab = ref.watch(
+      adminRequestsProvider.select((s) => s.selectedTab),
+    );
+    final notifier = ref.read(adminRequestsProvider.notifier);
 
     return AdaptiveRefreshIndicator(
       onRefresh: _onRefresh,
       child: ListView(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: ClampingScrollPhysics(),
+        ),
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
         children: [
           AdminRequestTabBar(
-            selectedTab: _selectedTab,
-            onTabChanged: (tab) {
-              setState(() {
-                _selectedTab = tab;
-              });
-            },
+            selectedTab: selectedTab,
+            onTabChanged: (tab) => notifier.setSelectedTab(tab),
           ),
           24.verticalSpace,
-          ...requests.map(
-            (request) => AdminRequestCard(
-              request: request,
-              onApprove: () {
-                // Simulate approval
-              },
-              onReject: () {
-                // Simulate rejection
-              },
-            ),
-          ),
+          if (selectedTab == 'LEAVE')
+            const LeaveRequestsListView()
+          else if (selectedTab == 'ADVANCE')
+            const AdvanceRequestsListView()
+          else
+            const LoanRequestsListView(),
           20.verticalSpace,
         ],
       ),

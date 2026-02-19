@@ -41,7 +41,7 @@ final class SummaryNotifierProvider
   }
 }
 
-String _$summaryNotifierHash() => r'0e3e2723d4bdb196a7be2b95545e8cf75e507e7d';
+String _$summaryNotifierHash() => r'cb58a95fa0b322c577661b1b77e607d5b907e337';
 
 abstract class _$SummaryNotifier extends $Notifier<SummaryState> {
   SummaryState build();

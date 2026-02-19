@@ -65,7 +65,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   String _getTargetRoute(String? role) {
     if (role?.toLowerCase() == 'admin') {
       return RouteConstants.routeAdminMainScreen;
-    } else if (role?.toLowerCase() == 'staff') {
+    } else if (role?.toLowerCase() == 'employee') {
       return RouteConstants.routeMainScreen;
     }
     return RouteConstants.routeLoginScreen;
