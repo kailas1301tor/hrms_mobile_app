@@ -1,35 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 import '../../../../res/styles/color_palette.dart';
 import '../../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
+import '../../model/staff_request_response.dart';
 
 class PulseRecentActivities extends StatelessWidget {
-  const PulseRecentActivities({super.key});
+  final List<StaffRequestResponse> activities;
 
-  static const List<Map<String, dynamic>> _mockActivities = [
-    {
-      "title": "Annual Leave",
-      "date": "2024-05-20",
-      "status": "PENDING",
-      "icon": Icons.access_time_rounded,
-    },
-    {
-      "title": "Salary Advance",
-      "date": "2024-05-18",
-      "status": "APPROVED",
-      "icon": Icons.payments_outlined,
-    },
-    {
-      "title": "Expense Claim",
-      "date": "2024-05-15",
-      "status": "PROCESS",
-      "icon": Icons.receipt_long_outlined,
-    },
-  ];
+  const PulseRecentActivities({super.key, required this.activities});
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null) return "";
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat('yyyy-MM-dd').format(date);
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
+  String _getTitle(StaffRequestResponse activity) {
+    if (activity.requestType == "LEAVE") {
+      return activity.details?.leaveType ?? "Leave Request";
+    } else if (activity.requestType == "SALARY") {
+      final subType = activity.details?.subType;
+      if (subType != null) {
+        // Capitalize first letter
+        return "${subType[0].toUpperCase()}${subType.substring(1).replaceAll('_', ' ')}";
+      }
+      return "Salary Request";
+    }
+    return activity.requestType ?? "Request";
+  }
+
+  IconData _getIcon(String? requestType) {
+    if (requestType == "LEAVE") {
+      return Icons.access_time_rounded;
+    } else if (requestType == "SALARY") {
+      return Icons.payments_outlined;
+    }
+    return Icons.receipt_long_outlined;
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (activities.isEmpty) {
+      return const SizedBox.shrink(); // Or show empty state
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -46,15 +66,15 @@ class PulseRecentActivities extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
-          itemCount: _mockActivities.length,
+          itemCount: activities.length,
           separatorBuilder: (context, index) => 12.verticalSpace,
           itemBuilder: (context, index) {
-            final activity = _mockActivities[index];
+            final activity = activities[index];
             return ActivitySmoothCard(
-              title: activity["title"],
-              date: activity["date"],
-              status: activity["status"],
-              icon: activity["icon"],
+              title: _getTitle(activity),
+              date: _formatDate(activity.submittedAt),
+              status: activity.status ?? "PENDING",
+              icon: _getIcon(activity.requestType),
             );
           },
         ),

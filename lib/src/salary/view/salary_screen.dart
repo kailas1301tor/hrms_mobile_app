@@ -1,14 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hrms_mobile/res/constants/app_constants.dart';
 import 'package:hrms_mobile/res/styles/fonts/plus_jakarta_sans_font_palette.dart';
-import 'package:hrms_mobile/src/salary/view/widgets/earnings_card.dart';
+import 'package:hrms_mobile/src/salary/view/widgets/salary_payslip_card.dart';
+import 'package:hrms_mobile/src/home/view/widgets/shimmer/pulse_recent_payslip_card_shimmer.dart';
+import 'package:hrms_mobile/res/styles/color_palette.dart';
+import '../../../../utils/common_widgets/common_switch_state.dart';
+import '../notifier/staff_salary_notifier.dart';
 
-class SalaryScreen extends StatelessWidget {
-  const SalaryScreen({super.key});
+class StaffSalaryScreen extends ConsumerStatefulWidget {
+  const StaffSalaryScreen({super.key});
+
+  @override
+  ConsumerState<StaffSalaryScreen> createState() => _StaffSalaryScreenState();
+}
+
+class _StaffSalaryScreenState extends ConsumerState<StaffSalaryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(staffSalaryProvider.notifier).fetchSalaryHistory();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final staffSalaryState = ref.watch(staffSalaryProvider);
+
     return Scaffold(
       backgroundColor: const Color(0XFFF8F9FB),
       body: SafeArea(
@@ -25,20 +44,35 @@ class SalaryScreen extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                  padding: EdgeInsets.only(bottom: 24.h),
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    final months = [
-                      'April 2024',
-                      'March 2024',
-                      'February 2024',
-                    ];
-                    return EarningsCard(
-                      monthYear: months[index],
-                      amount: '${AppConstants.currency} 12,450',
-                    );
-                  },
+                child: CommonSwitchState(
+                  loaderState: staffSalaryState.loaderState,
+                  errorMessage: staffSalaryState.error,
+                  reload: () => ref
+                      .read(staffSalaryProvider.notifier)
+                      .fetchSalaryHistory(isRefresh: true),
+                  loader: ListView.separated(
+                    padding: EdgeInsets.only(bottom: 24.h),
+                    itemCount: 5,
+                    separatorBuilder: (context, index) => 12.verticalSpace,
+                    itemBuilder: (context, index) =>
+                        const PulseRecentPayslipCardShimmer(),
+                  ),
+                  child: RefreshIndicator(
+                    onRefresh: () => ref
+                        .read(staffSalaryProvider.notifier)
+                        .fetchSalaryHistory(isRefresh: true),
+                    color: ColorPalette.primaryColor,
+                    child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.only(bottom: 24.h),
+                      itemCount: staffSalaryState.payslips?.length ?? 0,
+                      separatorBuilder: (context, index) => 12.verticalSpace,
+                      itemBuilder: (context, index) {
+                        final payslip = staffSalaryState.payslips![index];
+                        return SalaryPayslipCard(payslip: payslip);
+                      },
+                    ),
+                  ),
                 ),
               ),
             ],

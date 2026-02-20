@@ -70,6 +70,12 @@ abstract class NetWorkBaseServices {
   });
 
   Future<bool> geAccessTokenWithRefreshToken();
+
+  Future<BaseResponse> downloadFile({
+    required String endPoint,
+    required String fileName,
+    bool isFromAuth = false,
+  });
 }
 
 class BaseResponse {

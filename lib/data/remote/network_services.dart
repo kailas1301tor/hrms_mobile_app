@@ -973,6 +973,91 @@ class NetworkServices extends NetWorkBaseServices {
       });
     }
   }
+
+  /* ┌──────────────────────────────┐
+     │ API Client: Download File     │
+     │ Downloads file to storage    │
+     └──────────────────────────────┘ */
+  @override
+  Future<BaseResponse> downloadFile({
+    required String endPoint,
+    required String fileName,
+    bool isFromAuth = false,
+  }) async {
+    if (!(await isInternetAvailable())) {
+      logger.w('⚠ No Internet Available');
+      throw ApiExceptions.noInternet();
+    }
+
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: AppConstants.baseURL,
+        receiveDataWhenStatusError: true,
+        headers: {"Authorization": "Bearer ${AppConstants.accessToken}"},
+      ),
+    );
+
+    try {
+      logger.i('⬇ Initiating Download: $fileName');
+
+      // Use path_provider to get temporary directory
+      // Note: We need path_provider import in this file if not present, checking imports...
+      // It is NOT imported in the original file view, but I cannot easily add it without potentially messing up imports.
+      // Ideally I should pass the full path or handle path resolution here.
+      // But repo implementation is passing "fileName".
+      // Let's assume repo passes the FULL PATH or checks it.
+      // Wait, standard pattern is usually to download to a temp path and return it.
+      // Let's assume the repo handles the path generation logic? No, repo passed "fileName".
+
+      // Actually, to avoid adding imports here, let's look at how repo uses it.
+      // Repo: service.downloadFile(endPoint: ..., fileName: ...)
+      // It expects the service to handle the file writing.
+      // I need to import path_provider here or ask Repo to provide full path.
+      // To be safe and clean, I will assume fileName is just the name, and I will save it to text/temp.
+      // But I cannot add import easily.
+
+      // ALTERNATIVE: Use `downloadRequest` with `ResponseType.bytes` and let Repo write the file.
+      // But I already updated Repo to call `downloadFile`.
+      // I will add `import 'package:path_provider/path_provider.dart';` to the top of NetworkServices if needed.
+      // Looking at `pubspec.yaml`, `path_provider` is available.
+
+      // Let's add the method and I will add the import in a separate step if needed.
+      // WAIT. `NetworkServices` usually shouldn't depend on `path_provider` directly if it's a pure network layer,
+      // but `downloadFile` implies file system interaction.
+
+      // I will proceed with adding the method. I will assum `fileName` is the SAVE PATH.
+      // If `fileName` is just a name, I need directory.
+      // Repo said: `fileName: fileName`.
+      // I'll update Repo to provide the full SAVE PATH.
+
+      Response response = await dio.download(
+        endPoint,
+        fileName, // DIO takes savePath as second arg.
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            logger.d(
+              "Download: ${(received / total * 100).toStringAsFixed(0)}%",
+            );
+          }
+        },
+      );
+
+      logger.i('✅ Download Complete');
+      return BaseResponse(
+        statusCode: response.statusCode,
+        data: fileName,
+      ); // Return path as data
+    } on DioException catch (error) {
+      logger.e('❌ Download Failed: ${error.message}');
+      return BaseResponse(
+        statusCode: error.response?.statusCode,
+        data: error.response?.data,
+      );
+    } catch (e) {
+      logger.e('💥 Unexpected Error: $e');
+      throw ApiExceptions.oops();
+    }
+  }
 }
 
 const reset = '\x1B[0m';

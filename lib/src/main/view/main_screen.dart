@@ -79,7 +79,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     final pages = [
       const HomeScreen(),
       const TrackScreen(),
-      const SalaryScreen(),
+      const StaffSalaryScreen(),
     ];
 
     return PopScope(

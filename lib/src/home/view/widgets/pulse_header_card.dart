@@ -3,12 +3,44 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 import '../../../../res/styles/color_palette.dart';
 import '../../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
+import '../../model/staff_attendance_response.dart';
 
 class PulseHeaderCard extends StatelessWidget {
-  const PulseHeaderCard({super.key});
+  final StaffAttendanceRecord? attendanceRecord;
+
+  const PulseHeaderCard({super.key, this.attendanceRecord});
 
   @override
   Widget build(BuildContext context) {
+    // Determine status and color
+    String statusText = "Absent Today";
+    Color statusIconColor = ColorPalette.fFF2727;
+    String checkInTime = "-";
+    String remarks = "";
+    Color remarksColor = ColorPalette.white.withValues(alpha: 0.6);
+
+    if (attendanceRecord != null) {
+      if (attendanceRecord?.status == "Present") {
+        statusText = "On-Duty Today";
+        statusIconColor = ColorPalette.f1CB42F;
+        checkInTime = attendanceRecord?.checkIn ?? "-";
+
+        // Logic for Late/On-Time based on data or assumption.
+        // The API returns "status": "Late" in summary but checkIn time in record.
+        // If status in record is "Present", we check additional fields if available.
+        // For now, using the record status or derivation.
+        // The mock shows "15M LATE ENTRY" but API doesn't seem to have direct field for late duration in record
+        // except possibly in 'editReason' or inferred.
+        // We will display 'checkIn' time.
+      } else {
+        // Absent or other status
+        statusText = "${attendanceRecord?.status ?? 'Absent'} Today";
+        statusIconColor = (attendanceRecord?.status == 'On Leave')
+            ? ColorPalette.fFF2727
+            : ColorPalette.f1CB42F;
+      }
+    }
+
     return SmoothContainer(
       width: double.infinity,
       smoothness: 2,
@@ -48,15 +80,15 @@ class PulseHeaderCard extends StatelessWidget {
                     Container(
                       width: 12.w,
                       height: 12.w,
-                      decoration: const BoxDecoration(
-                        color: ColorPalette.f1CB42F,
+                      decoration: BoxDecoration(
+                        color: statusIconColor,
                         shape: BoxShape.circle,
                       ),
                     ),
                     8.horizontalSpace,
                     Expanded(
                       child: Text(
-                        "On-Duty Today",
+                        statusText,
                         style: PlusJakartaSansFontPalette.fWhite_28_700,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -82,20 +114,21 @@ class PulseHeaderCard extends StatelessWidget {
                           ),
                           4.verticalSpace,
                           Text(
-                            "08:15 AM",
+                            checkInTime,
                             style: PlusJakartaSansFontPalette.fWhite_20_600,
                             overflow: TextOverflow.ellipsis,
                           ),
                           4.verticalSpace,
-                          Text(
-                            "15M LATE ENTRY.",
-                            style: PlusJakartaSansFontPalette.base700(
-                              11,
-                              color: ColorPalette.fFF7C34,
-                              letterSpacing: 0.5,
+                          if (remarks.isNotEmpty)
+                            Text(
+                              remarks,
+                              style: PlusJakartaSansFontPalette.base700(
+                                11,
+                                color: remarksColor,
+                                letterSpacing: 0.5,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
                         ],
                       ),
                     ),

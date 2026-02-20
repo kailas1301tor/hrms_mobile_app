@@ -6,6 +6,7 @@ import '../../src/home/view/home_screen.dart';
 import '../../src/login/view/login_screen.dart';
 import '../../src/splash/view/splash_screen.dart';
 import '../../src/main/view/main_screen.dart';
+import '../../src/salary/view/payslip_viewer_screen.dart';
 import 'route_constants.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -31,6 +32,16 @@ class RouteGenerator {
         return _buildRoute(
           RouteConstants.routeAdminMainScreen,
           const AdminMainScreen(),
+        );
+
+      case RouteConstants.routePayslipViewer:
+        final args = settings.arguments as Map<String, String>;
+        return _buildRoute(
+          RouteConstants.routePayslipViewer,
+          PayslipViewerScreen(
+            filePath: args['filePath']!,
+            fileName: args['fileName']!,
+          ),
         );
 
       default:

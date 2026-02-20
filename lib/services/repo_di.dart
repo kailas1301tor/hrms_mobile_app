@@ -4,8 +4,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../data/remote/network_services.dart';
 import '../src/admin/requests/repo/admin_requests_repo.dart';
 import '../src/admin/attendance/repo/attendance_repo.dart';
+import '../src/home/repo/staff_pulse_repo.dart';
 import '../src/admin/summary/repo/summary_repo.dart';
 import '../src/login/repo/login_repo.dart';
+import '../src/salary/repo/staff_salary_repo.dart';
 
 part 'repo_di.g.dart';
 
@@ -31,4 +33,16 @@ SummaryRepo summaryRepository(Ref ref) {
 AttendanceRepo attendanceRepository(Ref ref) {
   final networkServices = ref.read(networkServicesProvider);
   return AttendanceRepoImpl(networkServices);
+}
+
+@Riverpod(keepAlive: false)
+StaffPulseRepo staffPulseRepository(Ref ref) {
+  final networkServices = ref.read(networkServicesProvider);
+  return StaffPulseRepoImpl(networkServices);
+}
+
+@Riverpod(keepAlive: false)
+StaffSalaryRepo staffSalaryRepo(Ref ref) {
+  final networkServices = ref.read(networkServicesProvider);
+  return StaffSalaryRepoImpl(networkServices);
 }

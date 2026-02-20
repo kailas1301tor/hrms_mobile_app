@@ -180,3 +180,87 @@ final class AttendanceRepositoryProvider
 
 String _$attendanceRepositoryHash() =>
     r'6b7cc9179a89a0534bb058822894c3aa3e3bb951';
+
+@ProviderFor(staffPulseRepository)
+const staffPulseRepositoryProvider = StaffPulseRepositoryProvider._();
+
+final class StaffPulseRepositoryProvider
+    extends $FunctionalProvider<StaffPulseRepo, StaffPulseRepo, StaffPulseRepo>
+    with $Provider<StaffPulseRepo> {
+  const StaffPulseRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'staffPulseRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$staffPulseRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<StaffPulseRepo> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  StaffPulseRepo create(Ref ref) {
+    return staffPulseRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(StaffPulseRepo value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<StaffPulseRepo>(value),
+    );
+  }
+}
+
+String _$staffPulseRepositoryHash() =>
+    r'4e9e7c3b1ce559b2a148123231c3cc7dc726da6c';
+
+@ProviderFor(staffSalaryRepo)
+const staffSalaryRepoProvider = StaffSalaryRepoProvider._();
+
+final class StaffSalaryRepoProvider
+    extends
+        $FunctionalProvider<StaffSalaryRepo, StaffSalaryRepo, StaffSalaryRepo>
+    with $Provider<StaffSalaryRepo> {
+  const StaffSalaryRepoProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'staffSalaryRepoProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$staffSalaryRepoHash();
+
+  @$internal
+  @override
+  $ProviderElement<StaffSalaryRepo> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  StaffSalaryRepo create(Ref ref) {
+    return staffSalaryRepo(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(StaffSalaryRepo value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<StaffSalaryRepo>(value),
+    );
+  }
+}
+
+String _$staffSalaryRepoHash() => r'b96a7211f733e32902d4a5fe295a48d4e034f0aa';
