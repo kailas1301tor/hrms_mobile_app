@@ -1,17 +1,17 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+// import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../state/home_state.dart';
+// import '../state/home_state.dart';
 
-part 'home_notifier.g.dart';
+// part 'home_notifier.g.dart';
 
-@Riverpod(keepAlive: false)
-class HomeNotifier extends _$HomeNotifier {
-  @override
-  HomeState build() {
-    return const HomeState();
-  }
+// @Riverpod(keepAlive: false)
+// class HomeNotifier extends _$HomeNotifier {
+//   @override
+//   HomeState build() {
+//     return const HomeState();
+//   }
 
-  Future<void> fetchData() async {
-    // Fetch tours
-  }
-}
+//   Future<void> fetchData() async {
+//     // Fetch tours
+//   }
+// }

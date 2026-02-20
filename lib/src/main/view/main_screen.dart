@@ -60,14 +60,15 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         message: 'Are you sure you want to logout from the application?',
         actionButtonText: 'Logout',
         cancelButtonText: 'Cancel',
-        onActionPressed: () {
-          ref.read(loginProvider.notifier).logout(() {
+        onActionPressed: () async {
+          await ref.read(loginProvider.notifier).logout(() {
             Navigator.pushNamedAndRemoveUntil(
               context,
               RouteConstants.routeLoginScreen,
               (route) => false,
             );
           });
+          ref.invalidate(selectedTabProvider);
         },
       ),
     );

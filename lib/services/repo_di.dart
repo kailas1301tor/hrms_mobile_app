@@ -9,6 +9,8 @@ import '../src/track/repo/track_repo.dart';
 import '../src/admin/summary/repo/summary_repo.dart';
 import '../src/login/repo/login_repo.dart';
 import '../src/salary/repo/staff_salary_repo.dart';
+import '../src/hr/attendance/repo/attendance_repo.dart';
+import '../src/hr/requests/repo/hr_requests_repo.dart';
 
 part 'repo_di.g.dart';
 
@@ -52,4 +54,16 @@ StaffSalaryRepo staffSalaryRepo(Ref ref) {
 TrackRepo trackRepository(Ref ref) {
   final networkServices = ref.read(networkServicesProvider);
   return TrackRepoImpl(networkServices);
+}
+
+@Riverpod(keepAlive: false)
+HrAttendanceRepo hrAttendanceRepository(Ref ref) {
+  final networkServices = ref.read(networkServicesProvider);
+  return HrAttendanceRepoImpl(networkServices);
+}
+
+@Riverpod(keepAlive: false)
+HrRequestsRepo hrRequestsRepository(Ref ref) {
+  final networkServices = ref.read(networkServicesProvider);
+  return HrRequestsRepoImpl(networkServices);
 }

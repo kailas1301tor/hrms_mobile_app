@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hrms_mobile/res/constants/string_constants.dart';
-import 'package:hrms_mobile/src/admin/summary/view/admin_summary_screen.dart';
-import 'package:hrms_mobile/src/admin/attendance/view/admin_attendance_screen.dart';
-import 'package:hrms_mobile/src/admin/requests/view/admin_requests_screen.dart';
+import 'package:hrms_mobile/src/hr/summary/view/hr_summary_screen.dart';
+import 'package:hrms_mobile/src/hr/attendance/view/hr_attendance_screen.dart';
+import 'package:hrms_mobile/src/hr/requests/view/hr_requests_screen.dart';
 import 'package:hrms_mobile/src/main/view/widgets/custom_common_app_bar.dart';
 import '../../../../generated/assets.dart';
 import '../../../../res/styles/app_theme.dart';
@@ -24,18 +24,18 @@ class SelectedTabNotifier extends Notifier<int> {
   void set(int index) => state = index;
 }
 
-final adminSelectedTabProvider = NotifierProvider<SelectedTabNotifier, int>(() {
+final hrSelectedTabProvider = NotifierProvider<SelectedTabNotifier, int>(() {
   return SelectedTabNotifier();
 });
 
-class AdminMainScreen extends ConsumerStatefulWidget {
-  const AdminMainScreen({super.key});
+class HrMainScreen extends ConsumerStatefulWidget {
+  const HrMainScreen({super.key});
 
   @override
-  ConsumerState<AdminMainScreen> createState() => _AdminMainScreenState();
+  ConsumerState<HrMainScreen> createState() => _HrMainScreenState();
 }
 
-class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
+class _HrMainScreenState extends ConsumerState<HrMainScreen> {
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   DateTime? _lastBackPressTime;
 
@@ -61,14 +61,14 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
         actionButtonText: 'Logout',
         cancelButtonText: 'Cancel',
         onActionPressed: () async {
-          ref.read(loginProvider.notifier).logout(() {
+          await ref.read(loginProvider.notifier).logout(() {
             Navigator.pushNamedAndRemoveUntil(
               context,
               RouteConstants.routeLoginScreen,
               (route) => false,
             );
           });
-          ref.invalidate(adminSelectedTabProvider);
+          ref.invalidate(hrSelectedTabProvider);
         },
       ),
     );
@@ -76,11 +76,11 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedTab = ref.watch(adminSelectedTabProvider);
+    final selectedTab = ref.watch(hrSelectedTabProvider);
     final pages = [
-      const AdminSummaryScreen(),
-      const AdminAttendanceScreen(),
-      const AdminRequestsScreen(),
+      const HrSummaryScreen(),
+      const HrAttendanceScreen(),
+      const HrRequestsScreen(),
       const SizedBox(), // Placeholder for Settings
     ];
 
@@ -97,7 +97,7 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
         }
 
         if (selectedTab != 0) {
-          ref.read(adminSelectedTabProvider.notifier).set(0);
+          ref.read(hrSelectedTabProvider.notifier).set(0);
           return;
         }
 
@@ -118,20 +118,20 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
         child: Scaffold(
           appBar: CustomCommonAppBar(
             title: _getHeading(selectedTab),
-            subtitle: "ADMIN",
+            subtitle: "HR",
           ),
           backgroundColor: ColorPalette.white,
           body: SafeArea(
             bottom: false,
             child: IndexedStack(index: selectedTab, children: pages),
           ),
-          bottomNavigationBar: AdminBottomNavigationSection(
+          bottomNavigationBar: HrBottomNavigationSection(
             selectedTab: selectedTab,
             onTabSelected: (index) {
               if (index == 3) {
                 _showLogoutPopup();
               } else {
-                ref.read(adminSelectedTabProvider.notifier).set(index);
+                ref.read(hrSelectedTabProvider.notifier).set(index);
               }
             },
           ),
@@ -155,11 +155,11 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
 }
 
 // Bottom Navigation Section
-class AdminBottomNavigationSection extends StatelessWidget {
+class HrBottomNavigationSection extends StatelessWidget {
   final int selectedTab;
   final Function(int) onTabSelected;
 
-  const AdminBottomNavigationSection({
+  const HrBottomNavigationSection({
     super.key,
     required this.selectedTab,
     required this.onTabSelected,

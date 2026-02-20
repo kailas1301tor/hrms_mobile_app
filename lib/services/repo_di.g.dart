@@ -305,3 +305,92 @@ final class TrackRepositoryProvider
 }
 
 String _$trackRepositoryHash() => r'302679a456fa18474210e5a6e23ca7f88d172d4e';
+
+@ProviderFor(hrAttendanceRepository)
+const hrAttendanceRepositoryProvider = HrAttendanceRepositoryProvider._();
+
+final class HrAttendanceRepositoryProvider
+    extends
+        $FunctionalProvider<
+          HrAttendanceRepo,
+          HrAttendanceRepo,
+          HrAttendanceRepo
+        >
+    with $Provider<HrAttendanceRepo> {
+  const HrAttendanceRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'hrAttendanceRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$hrAttendanceRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<HrAttendanceRepo> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  HrAttendanceRepo create(Ref ref) {
+    return hrAttendanceRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(HrAttendanceRepo value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<HrAttendanceRepo>(value),
+    );
+  }
+}
+
+String _$hrAttendanceRepositoryHash() =>
+    r'28ba3cab5aeb69efdf1a9f026b9df086f44e1d98';
+
+@ProviderFor(hrRequestsRepository)
+const hrRequestsRepositoryProvider = HrRequestsRepositoryProvider._();
+
+final class HrRequestsRepositoryProvider
+    extends $FunctionalProvider<HrRequestsRepo, HrRequestsRepo, HrRequestsRepo>
+    with $Provider<HrRequestsRepo> {
+  const HrRequestsRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'hrRequestsRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$hrRequestsRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<HrRequestsRepo> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  HrRequestsRepo create(Ref ref) {
+    return hrRequestsRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(HrRequestsRepo value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<HrRequestsRepo>(value),
+    );
+  }
+}
+
+String _$hrRequestsRepositoryHash() =>
+    r'19414e771b537476cde02aef116760bfb71ca4a0';

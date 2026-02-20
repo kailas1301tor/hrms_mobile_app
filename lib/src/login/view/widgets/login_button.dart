@@ -33,6 +33,13 @@ class LoginButton extends ConsumerWidget {
         RouteConstants.routeAdminMainScreen,
         (route) => false,
       );
+    } else if (role?.toLowerCase() == 'hr' ||
+        role?.toLowerCase() == 'hr manager') {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        RouteConstants.routeHrMainScreen,
+        (route) => false,
+      );
     } else if (role?.toLowerCase() == 'employee') {
       Navigator.pushNamedAndRemoveUntil(
         context,

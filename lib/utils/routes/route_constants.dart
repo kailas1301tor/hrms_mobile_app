@@ -5,5 +5,6 @@ class RouteConstants {
   static const String routeMainScreen = '/mainScreen';
   static const String routeLoginScreen = '/loginScreen';
   static const String routeAdminMainScreen = '/adminMainScreen';
+  static const String routeHrMainScreen = '/hrMainScreen';
   static const String routePayslipViewer = '/payslipViewer';
 }
