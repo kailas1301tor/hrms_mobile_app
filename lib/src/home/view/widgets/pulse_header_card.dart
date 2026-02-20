@@ -19,27 +19,13 @@ class PulseHeaderCard extends StatelessWidget {
     String remarks = "";
     Color remarksColor = ColorPalette.white.withValues(alpha: 0.6);
 
-    if (attendanceRecord != null) {
-      if (attendanceRecord?.status == "Present") {
-        statusText = "On-Duty Today";
-        statusIconColor = ColorPalette.f1CB42F;
-        checkInTime = attendanceRecord?.checkIn ?? "-";
+    checkInTime = attendanceRecord?.checkIn ?? "-";
 
-        // Logic for Late/On-Time based on data or assumption.
-        // The API returns "status": "Late" in summary but checkIn time in record.
-        // If status in record is "Present", we check additional fields if available.
-        // For now, using the record status or derivation.
-        // The mock shows "15M LATE ENTRY" but API doesn't seem to have direct field for late duration in record
-        // except possibly in 'editReason' or inferred.
-        // We will display 'checkIn' time.
-      } else {
-        // Absent or other status
-        statusText = "${attendanceRecord?.status ?? 'Absent'} Today";
-        statusIconColor = (attendanceRecord?.status == 'On Leave')
-            ? ColorPalette.fFF2727
-            : ColorPalette.f1CB42F;
-      }
-    }
+    statusIconColor = (attendanceRecord?.status == 'On Leave')
+        ? ColorPalette.fFF2727
+        : ColorPalette.f1CB42F;
+
+    statusText = "${attendanceRecord?.status ?? 'Absent'} Today";
 
     return SmoothContainer(
       width: double.infinity,
