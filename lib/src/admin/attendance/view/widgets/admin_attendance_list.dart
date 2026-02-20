@@ -177,12 +177,18 @@ class AdminAttendanceList extends ConsumerWidget {
                         ),
                       ),
                       8.verticalSpace,
-                      Text(
-                        checkIn,
-                        style: PlusJakartaSansFontPalette.base700(
-                          12,
-                          color: const Color(0XFF64748B),
-                        ),
+                      Row(
+                        children: [
+                          Icon(Icons.access_time_outlined, size: 13.sp),
+                          4.horizontalSpace,
+                          Text(
+                            checkIn,
+                            style: PlusJakartaSansFontPalette.base700(
+                              12,
+                              color: const Color(0XFF64748B),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
