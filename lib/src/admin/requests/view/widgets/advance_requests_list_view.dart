@@ -4,12 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrms_mobile/res/styles/color_palette.dart';
 import 'package:hrms_mobile/src/admin/requests/notifier/admin_requests_notifier.dart';
-import 'package:hrms_mobile/utils/common_widgets/common_switch_state.dart';
 import 'package:hrms_mobile/utils/common_widgets/common_switch_state_no_expanded.dart';
 import 'package:hrms_mobile/utils/helpers/extensions.dart';
 
 import 'approve_advance_dialog.dart';
 import 'reject_request_dialog.dart';
+import 'request_shimmer.dart';
 import 'salary_advance_request_card.dart';
 
 class AdvanceRequestsListView extends ConsumerWidget {
@@ -32,6 +32,8 @@ class AdvanceRequestsListView extends ConsumerWidget {
     return CommonSwitchStateNoExpanded(
       topMargin: context.sh() * .1,
       loaderState: loaderState,
+      loader: const RequestShimmer(),
+
       reload: notifier.fetchAdvanceRequests,
       child: ListView.builder(
         shrinkWrap: true,

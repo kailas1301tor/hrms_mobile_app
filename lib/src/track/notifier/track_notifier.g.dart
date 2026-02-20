@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'login_notifier.dart';
+part of 'track_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,52 +9,52 @@ part of 'login_notifier.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(LoginNotifier)
-const loginProvider = LoginNotifierProvider._();
+@ProviderFor(TrackNotifier)
+const trackProvider = TrackNotifierProvider._();
 
-final class LoginNotifierProvider
-    extends $NotifierProvider<LoginNotifier, LoginState> {
-  const LoginNotifierProvider._()
+final class TrackNotifierProvider
+    extends $NotifierProvider<TrackNotifier, TrackState> {
+  const TrackNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'loginProvider',
+        name: r'trackProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$loginNotifierHash();
+  String debugGetCreateSourceHash() => _$trackNotifierHash();
 
   @$internal
   @override
-  LoginNotifier create() => LoginNotifier();
+  TrackNotifier create() => TrackNotifier();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(LoginState value) {
+  Override overrideWithValue(TrackState value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<LoginState>(value),
+      providerOverride: $SyncValueProvider<TrackState>(value),
     );
   }
 }
 
-String _$loginNotifierHash() => r'db88852d53443d92c62370d7c7d3cb63e2d16217';
+String _$trackNotifierHash() => r'63eaa517977b2da3e42dcea03a316e124e56f804';
 
-abstract class _$LoginNotifier extends $Notifier<LoginState> {
-  LoginState build();
+abstract class _$TrackNotifier extends $Notifier<TrackState> {
+  TrackState build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<LoginState, LoginState>;
+    final ref = this.ref as $Ref<TrackState, TrackState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<LoginState, LoginState>,
-              LoginState,
+              AnyNotifier<TrackState, TrackState>,
+              TrackState,
               Object?,
               Object?
             >;

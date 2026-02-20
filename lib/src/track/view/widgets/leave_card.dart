@@ -2,13 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrms_mobile/res/styles/color_palette.dart';
 import 'package:hrms_mobile/res/styles/fonts/plus_jakarta_sans_font_palette.dart';
+import 'package:hrms_mobile/src/admin/requests/model/leave_request_item.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 
 class LeaveCard extends StatelessWidget {
-  const LeaveCard({super.key});
+  const LeaveCard({super.key, required this.item});
+
+  final LeaveRequestItem item;
+
+  Color _statusColor(String? status) {
+    switch (status?.toUpperCase()) {
+      case 'APPROVED':
+        return const Color(0XFF3AB400);
+      case 'REJECTED':
+        return const Color(0XFFBD1A0F);
+      default:
+        return const Color(0XFFF6993F);
+    }
+  }
+
+  Color _statusBgColor(String? status) {
+    switch (status?.toUpperCase()) {
+      case 'APPROVED':
+        return const Color(0XFFE3FBE7);
+      case 'REJECTED':
+        return const Color(0XFFFCF3F1);
+      default:
+        return const Color(0XFFFFF7E6);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final status = item.status ?? 'PENDING';
+    final title = item.details?.leaveType ?? 'Leave';
+    final days = item.details?.numberOfDays != null
+        ? '${item.details!.numberOfDays} day(s)'
+        : '';
+    final subtitle = days.isNotEmpty ? days : (item.details?.reason ?? '');
+    final dateStr = item.submittedAt != null && item.submittedAt!.isNotEmpty
+        ? item.submittedAt!.split('T').first
+        : '';
+
     return SmoothContainer(
       smoothness: 2,
       borderRadius: BorderRadius.circular(30.r),
@@ -26,7 +61,7 @@ class LeaveCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'ANNUAL LEAVE',
+                title.toUpperCase(),
                 style: PlusJakartaSansFontPalette.base700(
                   12,
                   color: ColorPalette.primaryColorDark,
@@ -36,14 +71,14 @@ class LeaveCard extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
-                  color: const Color(0XFFFFF7E6),
+                  color: _statusBgColor(status),
                   borderRadius: BorderRadius.circular(6.r),
                 ),
                 child: Text(
-                  'PENDING',
+                  status,
                   style: PlusJakartaSansFontPalette.base700(
                     11,
-                    color: const Color(0XFFF6993F),
+                    color: _statusColor(status),
                   ),
                 ),
               ),
@@ -51,7 +86,7 @@ class LeaveCard extends StatelessWidget {
           ),
           16.verticalSpace,
           Text(
-            'Full Entitlement',
+            subtitle,
             style: PlusJakartaSansFontPalette.base700(
               20,
               color: ColorPalette.primaryColorDark,
@@ -64,7 +99,7 @@ class LeaveCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'REFERENCE #N-101',
+                'REFERENCE #${item.requestId ?? ''}',
                 style: PlusJakartaSansFontPalette.base700(
                   11,
                   color: ColorPalette.f99A1AF,
@@ -72,7 +107,7 @@ class LeaveCard extends StatelessWidget {
                 ),
               ),
               Text(
-                '2024-05-20',
+                dateStr,
                 style: PlusJakartaSansFontPalette.base700(
                   11,
                   color: ColorPalette.f99A1AF,

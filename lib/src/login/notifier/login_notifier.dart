@@ -1,3 +1,4 @@
+import 'package:either_dart/either.dart';
 import 'package:flutter/material.dart';
 import 'package:hrms_mobile/data/local/sembast_services.dart';
 import 'package:hrms_mobile/res/constants/app_constants.dart';
@@ -46,7 +47,7 @@ class LoginNotifier extends _$LoginNotifier {
   }
 
   bool validateFields() {
-    final emailError = Validators.validateEmail(emailController.text);
+    final emailError = Validators.validateUserName(emailController.text);
     final passwordError = Validators.validatePassword(passwordController.text);
 
     state = state.copyWith(
@@ -66,53 +67,61 @@ class LoginNotifier extends _$LoginNotifier {
       passwordError: null,
     );
 
-    final result = await loginRepo.login(
-      emailController.text,
-      passwordController.text,
-    );
-
-    result.fold(
-      (error) {
-        state = state.copyWith(isLoading: false);
-        showCustomToast(
-          message: error.message ?? Strings.loginFailed,
-          isSuccess: false,
-        );
-      },
-      (response) async {
-        state = state.copyWith(isLoading: false);
-        if (response.token != null) {
-          AppConstants.accessToken = response.token!;
-          final sembast = ref.read(sembastServicesProvider);
-          await sembast.saveTokens(accessToken: response.token!);
-          await sembast.saveLoginResponse(response);
-        }
-        showCustomToast(message: Strings.loginSuccessful, isSuccess: true);
-        onSuccess(response.role);
-      },
-    );
+    loginRepo
+        .login(emailController.text, passwordController.text)
+        .fold(
+          (error) {
+            state = state.copyWith(isLoading: false);
+            showCustomToast(
+              message: error.message ?? Strings.loginFailed,
+              isSuccess: false,
+            );
+          },
+          (response) async {
+            state = state.copyWith(isLoading: false);
+            if (response.token != null) {
+              AppConstants.accessToken = response.token!;
+              final sembast = ref.read(sembastServicesProvider);
+              await sembast.saveTokens(accessToken: response.token!);
+              await sembast.saveLoginResponse(response);
+            }
+            onSuccess(response.role);
+          },
+        )
+        .catchError((error) {
+          state = state.copyWith(isLoading: false);
+          debugPrint(error.toString());
+        });
   }
 
   Future<void> logout(VoidCallback onDone) async {
     // Capture refs before async gap
     final sembast = ref.read(sembastServicesProvider);
+    if (!ref.mounted) return;
     state = state.copyWith(isLoading: true);
 
-    final result = await loginRepo.logout();
-
-    result.fold(
-      (error) {
-        // Even if API fails, we should clear local data and logout
-        _clearLocalAndLogout(onDone, sembast);
-      },
-      (response) {
-        _clearLocalAndLogout(onDone, sembast);
-        showCustomToast(
-          message: response['message'] ?? "Logged out successfully",
-          isSuccess: true,
-        );
-      },
-    );
+    loginRepo.logout().then((result) {
+      result.fold(
+        (error) {
+          if (ref.mounted) state = state.copyWith(isLoading: false);
+          debugPrint(error.toString());
+          _clearLocalAndLogout(onDone, sembast);
+        },
+        (response) {
+          if (ref.mounted) state = state.copyWith(isLoading: false);
+          debugPrint(response.toString());
+          _clearLocalAndLogout(onDone, sembast);
+          showCustomToast(
+            message: response['message'] ?? "Logged out successfully",
+            isSuccess: true,
+          );
+        },
+      );
+    }).catchError((error) {
+      if (ref.mounted) state = state.copyWith(isLoading: false);
+      debugPrint(error.toString());
+      _clearLocalAndLogout(onDone, sembast);
+    });
   }
 
   Future<void> _clearLocalAndLogout(

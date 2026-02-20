@@ -42,7 +42,7 @@ final class StaffPulseNotifierProvider
 }
 
 String _$staffPulseNotifierHash() =>
-    r'0ffb69d2a5eea6ab108b4df72e5773608ff0896b';
+    r'48d4142fb5a907e117aa3ccb8acdb25d17249048';
 
 abstract class _$StaffPulseNotifier extends $Notifier<StaffPulseState> {
   StaffPulseState build();

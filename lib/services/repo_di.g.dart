@@ -264,3 +264,44 @@ final class StaffSalaryRepoProvider
 }
 
 String _$staffSalaryRepoHash() => r'b96a7211f733e32902d4a5fe295a48d4e034f0aa';
+
+@ProviderFor(trackRepository)
+const trackRepositoryProvider = TrackRepositoryProvider._();
+
+final class TrackRepositoryProvider
+    extends $FunctionalProvider<TrackRepo, TrackRepo, TrackRepo>
+    with $Provider<TrackRepo> {
+  const TrackRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'trackRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$trackRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<TrackRepo> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  TrackRepo create(Ref ref) {
+    return trackRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(TrackRepo value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<TrackRepo>(value),
+    );
+  }
+}
+
+String _$trackRepositoryHash() => r'302679a456fa18474210e5a6e23ca7f88d172d4e';

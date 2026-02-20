@@ -37,17 +37,17 @@ class Validators {
     return null;
   }
 
-  static String? validateName(String? value) {
+  static String? validateUserName(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Name is required';
+      return 'User name is required';
     }
     final trimmed = value.trim();
     if (trimmed.length < 2) {
-      return 'Name must be at least 2 characters';
+      return 'User name must be at least 2 characters';
     }
-    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(trimmed)) {
-      return 'Name can only contain letters and spaces';
-    }
+
+    
+
     return null;
   }
 

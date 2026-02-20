@@ -24,6 +24,9 @@ class AppConstants {
   static String login = "$prefix$auth/login";
   static String adminRequestsPending = "$prefix/requests/admin/pending";
   static String get adminRequestAction => "$prefix/requests";
+  static String myRequests = "$prefix/requests/my-requests";
+  static String leaveTypes = "$prefix/masters/leave-types";
+  static String createRequest = "$prefix/requests";
   static String mobileStats = "$prefix/dashboard/mobile-stats";
   static String pendingApprovals = "$prefix/dashboard/pending-approvals";
   static String attendance = "$prefix/attendance";

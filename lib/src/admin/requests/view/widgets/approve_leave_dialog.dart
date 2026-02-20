@@ -60,7 +60,6 @@ class ApproveLeaveDialog extends ConsumerWidget {
                         : () => Navigator.of(context).pop(context),
                     buttonText: 'Cancel',
                     color: ColorPalette.primaryColor,
-                    isLoading: actionLoader,
                   ),
                 ),
                 12.horizontalSpace,

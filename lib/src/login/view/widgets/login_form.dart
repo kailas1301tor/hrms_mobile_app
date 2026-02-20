@@ -17,9 +17,11 @@ class LoginForm extends ConsumerWidget {
         32.verticalSpace,
         CommonTextFormField(
           controller: notifier.emailController,
-          hintText: 'enter email',
+          hintText: 'enter user name',
+          maxLength: 50,
           errorText: state.emailError,
-          keyboardType: TextInputType.emailAddress,
+          keyboardType: TextInputType.name,
+          textCapitalization: TextCapitalization.words,
           prefix: Icon(
             Icons.person_outline,
             color: const Color(0XFFACB5BB),
@@ -37,6 +39,7 @@ class LoginForm extends ConsumerWidget {
           hintText: 'enter password',
           isObscure: true,
           errorText: state.passwordError,
+          maxLength: 50,
           prefix: Icon(
             Icons.lock_outline,
             color: const Color(0XFFACB5BB),

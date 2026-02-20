@@ -692,11 +692,12 @@ class NetworkServices extends NetWorkBaseServices {
       case 204:
         return Right(response);
       case 401:
-        debugPrint(response.data);
         return Left(
           ResponseError(
             key: ApiErrorTypes.unAuthorized,
-            message: "UnAuthorized",
+            message:
+                getErrorFromResponse(key: 'message', response: response.data) ??
+                "UnAuthorized",
             response: response.data,
           ),
         );
@@ -704,7 +705,9 @@ class NetworkServices extends NetWorkBaseServices {
         return Left(
           ResponseError(
             key: ApiErrorTypes.unAuthorized,
-            message: "UnAuthorized",
+            message:
+                getErrorFromResponse(key: 'message', response: response.data) ??
+                "UnAuthorized",
             response: response.data,
           ),
         );

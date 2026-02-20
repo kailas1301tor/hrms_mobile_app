@@ -5,6 +5,7 @@ import '../data/remote/network_services.dart';
 import '../src/admin/requests/repo/admin_requests_repo.dart';
 import '../src/admin/attendance/repo/attendance_repo.dart';
 import '../src/home/repo/staff_pulse_repo.dart';
+import '../src/track/repo/track_repo.dart';
 import '../src/admin/summary/repo/summary_repo.dart';
 import '../src/login/repo/login_repo.dart';
 import '../src/salary/repo/staff_salary_repo.dart';
@@ -45,4 +46,10 @@ StaffPulseRepo staffPulseRepository(Ref ref) {
 StaffSalaryRepo staffSalaryRepo(Ref ref) {
   final networkServices = ref.read(networkServicesProvider);
   return StaffSalaryRepoImpl(networkServices);
+}
+
+@Riverpod(keepAlive: false)
+TrackRepo trackRepository(Ref ref) {
+  final networkServices = ref.read(networkServicesProvider);
+  return TrackRepoImpl(networkServices);
 }

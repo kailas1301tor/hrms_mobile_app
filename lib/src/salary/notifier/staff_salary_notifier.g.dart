@@ -42,7 +42,7 @@ final class StaffSalaryNotifierProvider
 }
 
 String _$staffSalaryNotifierHash() =>
-    r'14ea4dfed833a4d0885b96d4ea193ca60fdf64b2';
+    r'f9c561224c5b5854533d64e97b1b128f6f17704f';
 
 abstract class _$StaffSalaryNotifier extends $Notifier<StaffSalaryState> {
   StaffSalaryState build();

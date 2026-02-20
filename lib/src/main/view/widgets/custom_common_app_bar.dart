@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../generated/assets.dart';
 import '../../../../res/styles/color_palette.dart';
 import '../../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
 
@@ -30,17 +31,13 @@ class CustomCommonAppBar extends StatelessWidget
       child: Row(
         children: [
           // Logo Container
-          Container(
+          SizedBox(
             width: 44.w,
             height: 44.w,
-            decoration: BoxDecoration(
-              color: ColorPalette.primaryColor,
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Icon(
-              Icons.verified_user_outlined,
-              color: ColorPalette.white,
-              size: 24.sp,
+            child: Image.asset(
+              Assets.pngLogo,
+              width: 44.w,
+              fit: BoxFit.contain,
             ),
           ),
           12.horizontalSpace,

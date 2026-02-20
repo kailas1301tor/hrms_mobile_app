@@ -10,6 +10,7 @@ import '../../../../../utils/common_widgets/common_switch_state_no_expanded.dart
 import 'approve_loan_dialog.dart';
 import 'loan_request_card.dart';
 import 'reject_request_dialog.dart';
+import 'request_shimmer.dart';
 
 class LoanRequestsListView extends ConsumerWidget {
   const LoanRequestsListView({super.key});
@@ -29,6 +30,8 @@ class LoanRequestsListView extends ConsumerWidget {
     return CommonSwitchStateNoExpanded(
       topMargin: context.sh() * .1,
       loaderState: loaderState,
+      loader: const RequestShimmer(),
+
       reload: notifier.fetchLoanRequests,
       child: ListView.builder(
         shrinkWrap: true,

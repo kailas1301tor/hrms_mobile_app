@@ -124,15 +124,15 @@ class AdminRequestCardBase extends StatelessWidget {
                   color: ColorPalette.f101828,
                 ),
               ),
-              2.verticalSpace,
-              Text(
-                'LABOR ID: $requestId',
-                style: PlusJakartaSansFontPalette.base600(
-                  10,
-                  color: ColorPalette.f99A1AF,
-                  letterSpacing: 0.5,
-                ),
-              ),
+              // 2.verticalSpace,
+              // Text(
+              //   'LABOR ID: $requestId',
+              //   style: PlusJakartaSansFontPalette.base600(
+              //     10,
+              //     color: ColorPalette.f99A1AF,
+              //     letterSpacing: 0.5,
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -167,17 +167,23 @@ class AdminRequestCardBase extends StatelessWidget {
         SmoothContainer(
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
           smoothness: 2,
-          color: _isApproved ? const Color(0XFFE8FBF0) : const Color(0XFFFFF7ED),
+          color: _isApproved
+              ? const Color(0XFFE8FBF0)
+              : const Color(0XFFFFF7ED),
           borderRadius: BorderRadius.circular(8.r),
           side: BorderSide(
-            color: _isApproved ? const Color(0XFFDCFCE7) : const Color(0XFFFFEDD5),
+            color: _isApproved
+                ? const Color(0XFFDCFCE7)
+                : const Color(0XFFFFEDD5),
             width: 1,
           ),
           child: Text(
             status,
             style: PlusJakartaSansFontPalette.base700(
               10,
-              color: _isApproved ? const Color(0XFF15803D) : const Color(0XFFC2410C),
+              color: _isApproved
+                  ? const Color(0XFF15803D)
+                  : const Color(0XFFC2410C),
               letterSpacing: 1.0,
             ),
           ),

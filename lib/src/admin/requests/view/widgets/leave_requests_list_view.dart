@@ -11,6 +11,7 @@ import 'package:hrms_mobile/utils/helpers/extensions.dart';
 import 'approve_leave_dialog.dart';
 import 'leave_request_card.dart';
 import 'reject_request_dialog.dart';
+import 'request_shimmer.dart';
 
 class LeaveRequestsListView extends ConsumerWidget {
   const LeaveRequestsListView({super.key});
@@ -32,6 +33,7 @@ class LeaveRequestsListView extends ConsumerWidget {
     return CommonSwitchStateNoExpanded(
       topMargin: context.sh() * .1,
       loaderState: loaderState,
+      loader: const RequestShimmer(),
       reload: notifier.fetchLeaveRequests,
       child: ListView.builder(
         shrinkWrap: true,
