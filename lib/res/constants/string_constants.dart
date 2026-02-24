@@ -1,10 +1,8 @@
 class Strings {
   // App Name
-  static const appName = "Medcare";
+  static const appName = "Leptus HRM";
 
-  // Onboarding
-  static const onboardScreenTitle = "Welcome to Medcare";
-  static const onboardScreenDescription = "Your health companion";
+  static const username = "";
 
   // Auth
   static const loginAndRegisterTitleOne = "Login / Register";
@@ -56,7 +54,7 @@ class Strings {
   static const beachDuration = "8 days";
 
   // Navigation
-  static const navHome = "PULSE";
+  static const navHome = "HOME";
   static const navSchedule = "TRACK";
   static const navReport = "SALARY";
   static const navSettings = "EXIT";
@@ -64,7 +62,7 @@ class Strings {
   static const loginSuccessful = "Login Successful";
   static const loginFailed = "Login Failed";
   // Navigation admin
-  static const adminNavSummary = "Summary";
+  static const adminNavSummary = "Home";
   static const adminNavAttendance = "Attendance";
   static const adminNavRequests = "Requests";
 }

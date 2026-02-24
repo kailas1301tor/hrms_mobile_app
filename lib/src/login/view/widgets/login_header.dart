@@ -17,7 +17,7 @@ class LoginHeader extends StatelessWidget {
           text: TextSpan(
             children: [
               TextSpan(
-                text: 'Nexus',
+                text: 'LEPTIS ',
                 style: PlusJakartaSansFontPalette.base700(
                   28,
                   color: ColorPalette.primaryColorDark,

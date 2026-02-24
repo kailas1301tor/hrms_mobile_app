@@ -43,13 +43,21 @@ class TrackNotifier extends _$TrackNotifier {
     String leaveTypeName,
     String fromDate,
     String toDate,
-    String reason,
-  ) async {
-    final from = DateTime.tryParse(fromDate);
-    final to = DateTime.tryParse(toDate);
-    final numberOfDays = (from != null && to != null && !to.isBefore(from))
-        ? (to.difference(from).inDays + 1).toString()
-        : '1';
+    String reason, {
+    bool isHalfDay = false,
+  }) async {
+    // When half-day is selected, enforce toDate == fromDate
+    final effectiveToDate = isHalfDay ? fromDate : toDate;
+    final String numberOfDays;
+    if (isHalfDay) {
+      numberOfDays = '0.5';
+    } else {
+      final from = DateTime.tryParse(fromDate);
+      final to = DateTime.tryParse(effectiveToDate);
+      numberOfDays = (from != null && to != null && !to.isBefore(from))
+          ? (to.difference(from).inDays + 1).toString()
+          : '1';
+    }
     state = state.copyWith(createRequestLoader: true);
     final body = {
       'requestType': 'LEAVE',
@@ -57,9 +65,10 @@ class TrackNotifier extends _$TrackNotifier {
         'leaveType': leaveTypeName,
         'leaveTypeId': leaveTypeId,
         'isPaid': true,
+        'isHalfDay': isHalfDay,
         'numberOfDays': numberOfDays,
         'fromDate': fromDate,
-        'toDate': toDate,
+        'toDate': effectiveToDate,
         'reason': reason,
       },
     };

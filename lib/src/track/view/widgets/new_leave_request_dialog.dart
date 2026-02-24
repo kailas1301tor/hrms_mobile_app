@@ -23,6 +23,7 @@ class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
   final _selectedLeaveType = ValueNotifier<LeaveTypeItem?>(null);
   final _fromDate = ValueNotifier<DateTime?>(null);
   final _toDate = ValueNotifier<DateTime?>(null);
+  final _isHalfDay = ValueNotifier<bool>(false);
   final _leaveTypeError = ValueNotifier<String?>(null);
   final _fromDateError = ValueNotifier<String?>(null);
   final _toDateError = ValueNotifier<String?>(null);
@@ -41,6 +42,7 @@ class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
     _selectedLeaveType.dispose();
     _fromDate.dispose();
     _toDate.dispose();
+    _isHalfDay.dispose();
     _leaveTypeError.dispose();
     _fromDateError.dispose();
     _toDateError.dispose();
@@ -67,10 +69,17 @@ class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
     if (picked != null) {
       _fromDate.value = picked;
       _fromDateError.value = null;
+      // Keep to-date in sync when half-day is on
+      if (_isHalfDay.value) {
+        _toDate.value = picked;
+        _toDateError.value = null;
+      }
     }
   }
 
   Future<void> _pickToDate() async {
+    // Prevent editing to-date when half-day is selected
+    if (_isHalfDay.value) return;
     final initial = _toDate.value ?? _fromDate.value ?? DateTime.now();
     final picked = await showDatePicker(
       context: context,
@@ -80,6 +89,15 @@ class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
     );
     if (picked != null) {
       _toDate.value = picked;
+      _toDateError.value = null;
+    }
+  }
+
+  void _onHalfDayChanged(bool value) {
+    _isHalfDay.value = value;
+    if (value) {
+      // Sync to-date to from-date
+      _toDate.value = _fromDate.value;
       _toDateError.value = null;
     }
   }
@@ -95,15 +113,18 @@ class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
       _fromDateError.value = 'Please select from date';
       valid = false;
     }
-    if (_toDate.value == null) {
-      _toDateError.value = 'Please select to date';
-      valid = false;
-    }
-    if (_fromDate.value != null &&
-        _toDate.value != null &&
-        _toDate.value!.isBefore(_fromDate.value!)) {
-      _toDateError.value = 'To date must be on or after from date';
-      valid = false;
+    // When half-day is on, to-date is auto-filled; only validate when off
+    if (!_isHalfDay.value) {
+      if (_toDate.value == null) {
+        _toDateError.value = 'Please select to date';
+        valid = false;
+      }
+      if (_fromDate.value != null &&
+          _toDate.value != null &&
+          _toDate.value!.isBefore(_fromDate.value!)) {
+        _toDateError.value = 'To date must be on or after from date';
+        valid = false;
+      }
     }
     final reason = _reasonController.text.trim();
     if (reason.isEmpty) {
@@ -132,9 +153,9 @@ class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
       insetPadding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Container(
         constraints: BoxConstraints(maxHeight: maxHeight),
-        padding: EdgeInsets.all(24.w).copyWith(
-          bottom: 24.w + viewInsets.bottom,
-        ),
+        padding: EdgeInsets.all(
+          24.w,
+        ).copyWith(bottom: 24.w + viewInsets.bottom),
         decoration: BoxDecoration(
           color: ColorPalette.white,
           borderRadius: BorderRadius.circular(20.r),
@@ -204,6 +225,29 @@ class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
                 },
               ),
               12.verticalSpace,
+              // ── Half-day toggle ──
+              ValueListenableBuilder<bool>(
+                valueListenable: _isHalfDay,
+                builder: (context, isHalfDay, _) {
+                  return Row(
+                    children: [
+                      Checkbox(
+                        value: isHalfDay,
+                        onChanged: (v) => _onHalfDayChanged(v ?? false),
+                        activeColor: ColorPalette.primaryColor,
+                      ),
+                      Text(
+                        'Half day',
+                        style: PlusJakartaSansFontPalette.base600(
+                          14,
+                          color: ColorPalette.f101828,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              12.verticalSpace,
               Text(
                 'From date',
                 style: PlusJakartaSansFontPalette.base600(
@@ -263,43 +307,57 @@ class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
                 ),
               ),
               6.verticalSpace,
-              ValueListenableBuilder<DateTime?>(
-                valueListenable: _toDate,
-                builder: (context, toDate, _) {
-                  return ValueListenableBuilder<String?>(
-                    valueListenable: _toDateError,
-                    builder: (context, toDateError, _) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          InkWell(
-                            onTap: _pickToDate,
-                            child: InputDecorator(
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
+              ValueListenableBuilder<bool>(
+                valueListenable: _isHalfDay,
+                builder: (context, isHalfDay, _) {
+                  return ValueListenableBuilder<DateTime?>(
+                    valueListenable: _toDate,
+                    builder: (context, toDate, _) {
+                      return ValueListenableBuilder<String?>(
+                        valueListenable: _toDateError,
+                        builder: (context, toDateError, _) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Opacity(
+                                opacity: isHalfDay ? 0.5 : 1.0,
+                                child: IgnorePointer(
+                                  ignoring: isHalfDay,
+                                  child: InkWell(
+                                    onTap: _pickToDate,
+                                    child: InputDecorator(
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12.r,
+                                          ),
+                                        ),
+                                        contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 12.w,
+                                          vertical: 12.h,
+                                        ),
+                                        errorText: toDateError,
+                                      ),
+                                      child: Text(
+                                        toDate != null
+                                            ? _formatDate(toDate)
+                                            : 'Select to date',
+                                        style:
+                                            PlusJakartaSansFontPalette.base600(
+                                              14,
+                                              color: toDate != null
+                                                  ? ColorPalette.f101828
+                                                  : ColorPalette.f99A1AF,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 12.w,
-                                  vertical: 12.h,
-                                ),
-                                errorText: toDateError,
                               ),
-                              child: Text(
-                                toDate != null
-                                    ? _formatDate(toDate)
-                                    : 'Select to date',
-                                style: PlusJakartaSansFontPalette.base600(
-                                  14,
-                                  color: toDate != null
-                                      ? ColorPalette.f101828
-                                      : ColorPalette.f99A1AF,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                            ],
+                          );
+                        },
                       );
                     },
                   );
@@ -375,13 +433,16 @@ class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
                               if (!_validate()) return;
                               final leaveType = _selectedLeaveType.value!;
                               final from = _fromDate.value!;
-                              final to = _toDate.value!;
+                              final to = _isHalfDay.value
+                                  ? from
+                                  : _toDate.value!;
                               final success = await notifier.submitLeaveRequest(
                                 leaveType.id!,
                                 leaveType.name!,
                                 _formatDate(from),
                                 _formatDate(to),
                                 _reasonController.text.trim(),
+                                isHalfDay: _isHalfDay.value,
                               );
                               if (context.mounted && success) {
                                 Navigator.of(context).pop(context);

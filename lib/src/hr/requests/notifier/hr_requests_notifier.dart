@@ -6,12 +6,13 @@ import 'package:hrms_mobile/src/hr/requests/state/hr_requests_state.dart';
 import 'package:hrms_mobile/utils/helpers/validators.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../utils/helpers/common_functions.dart';
+
 part 'hr_requests_notifier.g.dart';
 
 @riverpod
 class HrRequestsNotifier extends _$HrRequestsNotifier {
-  HrRequestsRepo get hrRequestsRepo =>
-      ref.read(hrRequestsRepositoryProvider);
+  HrRequestsRepo get hrRequestsRepo => ref.read(hrRequestsRepositoryProvider);
 
   final TextEditingController rejectionReasonController =
       TextEditingController();
@@ -144,9 +145,7 @@ class HrRequestsNotifier extends _$HrRequestsNotifier {
     }
     state = state.copyWith(advanceLoadingMore: true);
     final nextPage = state.advancePage + 1;
-    final result = await hrRequestsRepo.getPendingSalaryAdvance(
-      page: nextPage,
-    );
+    final result = await hrRequestsRepo.getPendingSalaryAdvance(page: nextPage);
     if (!ref.mounted) return;
     result.fold(
       (_) => state = state.copyWith(advanceLoadingMore: false),
@@ -201,35 +200,18 @@ class HrRequestsNotifier extends _$HrRequestsNotifier {
   Future<void> submitApproveAdvance(
     BuildContext context,
     String requestId,
+    int amount,
   ) async {
-    final interestRateError = Validators.validateInterestRate(
-      interestRateController.text,
-    );
-    final repaymentPeriodError = Validators.validateRepaymentPeriod(
-      repaymentPeriodController.text,
-    );
-    if (interestRateError != null || repaymentPeriodError != null) {
-      state = state.copyWith(
-        interestRateError: interestRateError,
-        repaymentPeriodError: repaymentPeriodError,
-      );
-      return;
-    }
-    state = state.copyWith(
-      actionLoader: true,
-      interestRateError: null,
-      repaymentPeriodError: null,
-    );
-    final interestRate = int.tryParse(interestRateController.text.trim()) ?? 0;
-    final repaymentPeriod =
-        int.tryParse(repaymentPeriodController.text.trim()) ?? 6;
+    state = state.copyWith(actionLoader: true);
     final result = await hrRequestsRepo.submitAction(requestId, {
       'action': 'APPROVE',
-      'interestRate': interestRate,
-      'repaymentPeriod': repaymentPeriod,
+      'amount': amount,
     });
     if (!ref.mounted) return;
-    result.fold((error) => state = state.copyWith(actionLoader: false), (_) {
+    result.fold((error) => state = state.copyWith(actionLoader: false), (
+      right,
+    ) {
+      showCustomToast(message: 'Salary advance approved successfully');
       state = state.copyWith(actionLoader: false);
       fetchAdvanceRequests();
       if (context.mounted) Navigator.of(context).pop(context);
@@ -267,6 +249,7 @@ class HrRequestsNotifier extends _$HrRequestsNotifier {
     result.fold((error) => state = state.copyWith(actionLoader: false), (
       success,
     ) {
+      showCustomToast(message: 'Loan approved successfully');
       state = state.copyWith(actionLoader: false);
       fetchLoanRequests();
       if (context.mounted) Navigator.of(context).pop(context);
@@ -294,10 +277,13 @@ class HrRequestsNotifier extends _$HrRequestsNotifier {
       state = state.copyWith(actionLoader: false);
       final tab = state.selectedTab;
       if (tab == 'LEAVE') {
+        showCustomToast(message: 'Leave rejected successfully');
         fetchLeaveRequests();
       } else if (tab == 'ADVANCE') {
+        showCustomToast(message: 'Salary advance rejected successfully');
         fetchAdvanceRequests();
       } else {
+        showCustomToast(message: 'Loan rejected successfully');
         fetchLoanRequests();
       }
       if (context.mounted) Navigator.of(context).pop(context);

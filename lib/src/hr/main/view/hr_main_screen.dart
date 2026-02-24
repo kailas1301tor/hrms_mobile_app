@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hrms_mobile/res/constants/app_constants.dart';
 import 'package:hrms_mobile/res/constants/string_constants.dart';
 import 'package:hrms_mobile/src/hr/summary/view/hr_summary_screen.dart';
 import 'package:hrms_mobile/src/hr/attendance/view/hr_attendance_screen.dart';
@@ -116,10 +117,7 @@ class _HrMainScreenState extends ConsumerState<HrMainScreen> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: AppTheme.systemOverlayStyle,
         child: Scaffold(
-          appBar: CustomCommonAppBar(
-            title: _getHeading(selectedTab),
-            subtitle: "HR",
-          ),
+          appBar: CustomCommonAppBar(title: AppConstants.user, subtitle: "HR"),
           backgroundColor: ColorPalette.white,
           body: SafeArea(
             bottom: false,

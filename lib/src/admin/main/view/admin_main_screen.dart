@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hrms_mobile/res/constants/app_constants.dart';
 import 'package:hrms_mobile/res/constants/string_constants.dart';
 import 'package:hrms_mobile/src/admin/summary/view/admin_summary_screen.dart';
 import 'package:hrms_mobile/src/admin/attendance/view/admin_attendance_screen.dart';
@@ -117,7 +118,7 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
         value: AppTheme.systemOverlayStyle,
         child: Scaffold(
           appBar: CustomCommonAppBar(
-            title: _getHeading(selectedTab),
+            title: AppConstants.user,
             subtitle: "ADMIN",
           ),
           backgroundColor: ColorPalette.white,

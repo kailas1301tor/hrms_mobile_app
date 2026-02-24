@@ -58,7 +58,7 @@ class LoginNotifier extends _$LoginNotifier {
     return emailError == null && passwordError == null;
   }
 
-  Future<void> login(Function(String?) onSuccess) async {
+  Future<void> login(Function(String?, String?) onSuccess) async {
     if (!validateFields()) return;
 
     state = state.copyWith(
@@ -85,7 +85,7 @@ class LoginNotifier extends _$LoginNotifier {
               await sembast.saveTokens(accessToken: response.token!);
               await sembast.saveLoginResponse(response);
             }
-            onSuccess(response.role);
+            onSuccess(response.role, response.user?.name);
           },
         )
         .catchError((error) {
@@ -100,28 +100,31 @@ class LoginNotifier extends _$LoginNotifier {
     if (!ref.mounted) return;
     state = state.copyWith(isLoading: true);
 
-    loginRepo.logout().then((result) {
-      result.fold(
-        (error) {
+    loginRepo
+        .logout()
+        .then((result) {
+          result.fold(
+            (error) {
+              if (ref.mounted) state = state.copyWith(isLoading: false);
+              debugPrint(error.toString());
+              _clearLocalAndLogout(onDone, sembast);
+            },
+            (response) {
+              if (ref.mounted) state = state.copyWith(isLoading: false);
+              debugPrint(response.toString());
+              _clearLocalAndLogout(onDone, sembast);
+              showCustomToast(
+                message: response['message'] ?? "Logged out successfully",
+                isSuccess: true,
+              );
+            },
+          );
+        })
+        .catchError((error) {
           if (ref.mounted) state = state.copyWith(isLoading: false);
           debugPrint(error.toString());
           _clearLocalAndLogout(onDone, sembast);
-        },
-        (response) {
-          if (ref.mounted) state = state.copyWith(isLoading: false);
-          debugPrint(response.toString());
-          _clearLocalAndLogout(onDone, sembast);
-          showCustomToast(
-            message: response['message'] ?? "Logged out successfully",
-            isSuccess: true,
-          );
-        },
-      );
-    }).catchError((error) {
-      if (ref.mounted) state = state.copyWith(isLoading: false);
-      debugPrint(error.toString());
-      _clearLocalAndLogout(onDone, sembast);
-    });
+        });
   }
 
   Future<void> _clearLocalAndLogout(

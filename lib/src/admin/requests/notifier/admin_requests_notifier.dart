@@ -3,6 +3,7 @@ import 'package:hrms_mobile/res/enums/enums.dart';
 import 'package:hrms_mobile/services/repo_di.dart';
 import 'package:hrms_mobile/src/admin/requests/repo/admin_requests_repo.dart';
 import 'package:hrms_mobile/src/admin/requests/state/admin_requests_state.dart';
+import 'package:hrms_mobile/utils/helpers/common_functions.dart';
 import 'package:hrms_mobile/utils/helpers/validators.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -193,6 +194,7 @@ class AdminRequestsNotifier extends _$AdminRequestsNotifier {
       success,
     ) {
       state = state.copyWith(actionLoader: false);
+      showCustomToast(message: 'Leave approved successfully', isSuccess: true);
       fetchLeaveRequests();
       if (context.mounted) Navigator.of(context).pop(context);
     });
@@ -201,36 +203,20 @@ class AdminRequestsNotifier extends _$AdminRequestsNotifier {
   Future<void> submitApproveAdvance(
     BuildContext context,
     String requestId,
+    int amount,
   ) async {
-    final interestRateError = Validators.validateInterestRate(
-      interestRateController.text,
-    );
-    final repaymentPeriodError = Validators.validateRepaymentPeriod(
-      repaymentPeriodController.text,
-    );
-    if (interestRateError != null || repaymentPeriodError != null) {
-      state = state.copyWith(
-        interestRateError: interestRateError,
-        repaymentPeriodError: repaymentPeriodError,
-      );
-      return;
-    }
-    state = state.copyWith(
-      actionLoader: true,
-      interestRateError: null,
-      repaymentPeriodError: null,
-    );
-    final interestRate = int.tryParse(interestRateController.text.trim()) ?? 0;
-    final repaymentPeriod =
-        int.tryParse(repaymentPeriodController.text.trim()) ?? 6;
+    state = state.copyWith(actionLoader: true);
     final result = await adminRequestsRepo.submitAction(requestId, {
       'action': 'APPROVE',
-      'interestRate': interestRate,
-      'repaymentPeriod': repaymentPeriod,
+      'amount': amount,
     });
     if (!ref.mounted) return;
     result.fold((error) => state = state.copyWith(actionLoader: false), (_) {
       state = state.copyWith(actionLoader: false);
+      showCustomToast(
+        message: 'Advance approved successfully',
+        isSuccess: true,
+      );
       fetchAdvanceRequests();
       if (context.mounted) Navigator.of(context).pop(context);
     });
@@ -268,6 +254,7 @@ class AdminRequestsNotifier extends _$AdminRequestsNotifier {
       success,
     ) {
       state = state.copyWith(actionLoader: false);
+      showCustomToast(message: 'Loan approved successfully', isSuccess: true);
       fetchLoanRequests();
       if (context.mounted) Navigator.of(context).pop(context);
     });
@@ -294,10 +281,19 @@ class AdminRequestsNotifier extends _$AdminRequestsNotifier {
       state = state.copyWith(actionLoader: false);
       final tab = state.selectedTab;
       if (tab == 'LEAVE') {
+        showCustomToast(
+          message: 'Leave rejected successfully',
+          isSuccess: true,
+        );
         fetchLeaveRequests();
       } else if (tab == 'ADVANCE') {
+        showCustomToast(
+          message: 'Advance rejected successfully',
+          isSuccess: true,
+        );
         fetchAdvanceRequests();
       } else {
+        showCustomToast(message: 'Loan rejected successfully', isSuccess: true);
         fetchLoanRequests();
       }
       if (context.mounted) Navigator.of(context).pop(context);

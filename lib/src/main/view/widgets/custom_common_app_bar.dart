@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hrms_mobile/res/constants/app_constants.dart';
 import '../../../../generated/assets.dart';
 import '../../../../res/styles/color_palette.dart';
 import '../../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
@@ -48,7 +49,7 @@ class CustomCommonAppBar extends StatelessWidget
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  title ?? "Nexus Portal",
+                  title ?? AppConstants.user,
                   style: TextStyle(
                     fontFamily:
                         PlusJakartaSansFontPalette.plusJakartaSansFamily,

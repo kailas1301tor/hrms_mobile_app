@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hrms_mobile/src/hr/main/view/hr_main_screen.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 import '../../../../../res/styles/color_palette.dart';
 import '../../../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
@@ -14,7 +15,9 @@ class HrLiveActionItems extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final summaryState = ref.watch(
-      hrSummaryProvider.select((s) => (s.pendingApprovals, s.error, s.isLoading)),
+      hrSummaryProvider.select(
+        (s) => (s.pendingApprovals, s.error, s.isLoading),
+      ),
     );
     final pendingApprovals = summaryState.$1?.data ?? [];
 
@@ -46,7 +49,9 @@ class HrLiveActionItems extends ConsumerWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  ref.read(hrSelectedTabProvider.notifier).set(2);
+                },
                 child: Text(
                   "VIEW ALL",
                   style: PlusJakartaSansFontPalette.base700(

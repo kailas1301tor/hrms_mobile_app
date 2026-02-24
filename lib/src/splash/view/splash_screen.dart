@@ -47,6 +47,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     AppConstants.accessToken = await sembast.getAccessToken() ?? '';
     AppConstants.refreshToken = await sembast.getRefreshToken() ?? '';
+
     if (!mounted) return;
 
     await Future.delayed(const Duration(milliseconds: 500));
@@ -54,7 +55,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     final loginResponse = await sembast.getLoginResponse();
     if (!mounted) return;
-
+    AppConstants.user = loginResponse?.user?.name ?? "";
     final targetRoute = loginResponse != null
         ? _getTargetRoute(loginResponse.role)
         : RouteConstants.routeLoginScreen;

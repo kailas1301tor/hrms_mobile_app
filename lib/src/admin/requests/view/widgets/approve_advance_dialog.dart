@@ -19,12 +19,14 @@ class ApproveAdvanceDialog extends ConsumerStatefulWidget {
 }
 
 class _ApproveAdvanceDialogState extends ConsumerState<ApproveAdvanceDialog> {
+  final _amountController = TextEditingController();
+  final _amountError = ValueNotifier<String?>(null);
+
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(adminRequestsProvider.notifier).clearActionControllers();
-    });
+  void dispose() {
+    _amountController.dispose();
+    _amountError.dispose();
+    super.dispose();
   }
 
   @override
@@ -32,8 +34,6 @@ class _ApproveAdvanceDialogState extends ConsumerState<ApproveAdvanceDialog> {
     final notifier = ref.read(adminRequestsProvider.notifier);
     final state = ref.watch(adminRequestsProvider);
     final actionLoader = state.actionLoader;
-    final interestRateError = state.interestRateError;
-    final repaymentPeriodError = state.repaymentPeriodError;
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -58,41 +58,27 @@ class _ApproveAdvanceDialogState extends ConsumerState<ApproveAdvanceDialog> {
             ),
             16.verticalSpace,
             Text(
-              'Interest rate (%)',
+              'Amount',
               style: PlusJakartaSansFontPalette.base600(
                 14,
                 color: ColorPalette.f101828,
               ),
             ),
             6.verticalSpace,
-            CommonTextFormField(
-              controller: notifier.interestRateController,
-              label: 'Interest rate',
-              hintText: 'e.g. 0 for no interest',
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              errorText: interestRateError,
-              onChanged: (_) => notifier.clearInterestRateError(),
+            ValueListenableBuilder<String?>(
+              valueListenable: _amountError,
+              builder: (context, amountError, _) {
+                return CommonTextFormField(
+                  controller: _amountController,
+                  label: 'Amount',
+                  hintText: 'e.g. 500',
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  errorText: amountError,
+                  onChanged: (_) => _amountError.value = null,
+                );
+              },
             ),
-            12.verticalSpace,
-            Text(
-              'Repayment period (months)',
-              style: PlusJakartaSansFontPalette.base600(
-                14,
-                color: ColorPalette.f101828,
-              ),
-            ),
-            6.verticalSpace,
-            CommonTextFormField(
-              controller: notifier.repaymentPeriodController,
-              label: 'Repayment period',
-              hintText: 'e.g. 6 months',
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              errorText: repaymentPeriodError,
-              onChanged: (_) => notifier.clearRepaymentPeriodError(),
-            ),
-
             24.verticalSpace,
             Row(
               children: [
@@ -110,10 +96,20 @@ class _ApproveAdvanceDialogState extends ConsumerState<ApproveAdvanceDialog> {
                   child: PrimaryButton(
                     onPressed: actionLoader
                         ? null
-                        : () => notifier.submitApproveAdvance(
-                            context,
-                            widget.requestId,
-                          ),
+                        : () {
+                            final text = _amountController.text.trim();
+                            final amount = int.tryParse(text);
+                            if (text.isEmpty || amount == null || amount <= 0) {
+                              _amountError.value =
+                                  'Please enter a valid amount';
+                              return;
+                            }
+                            notifier.submitApproveAdvance(
+                              context,
+                              widget.requestId,
+                              amount,
+                            );
+                          },
                     buttonText: 'Submit',
                     color: ColorPalette.primaryColor,
                     isLoading: actionLoader,
