@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 import '../../../../../res/styles/color_palette.dart';
 import '../../../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
+import '../../../common/widgets/admin_branch_selector.dart';
 
 class AdminAttendanceFilter extends ConsumerStatefulWidget {
   const AdminAttendanceFilter({super.key});
@@ -25,7 +26,7 @@ class _AdminAttendanceFilterState extends ConsumerState<AdminAttendanceFilter> {
 
     return Column(
       children: [
-        // const AdminBranchSelector(),
+        const AdminBranchSelector(),
         16.verticalSpace,
         // Status Filter Chips
         Row(

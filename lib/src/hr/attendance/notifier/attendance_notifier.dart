@@ -17,9 +17,38 @@ class HrAttendanceNotifier extends _$HrAttendanceNotifier {
   HrAttendanceState build() {
     final String initialDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-    Future.microtask(() => getAttendance());
+    Future.microtask(() async {
+      await getBranches();
+      getAttendance();
+    });
 
     return HrAttendanceState(date: initialDate);
+  }
+
+  Future<void> getBranches({bool isRefresh = false}) async {
+    if (isRefresh || state.branches.isEmpty) {
+      if (!isRefresh) {
+        state = state.copyWith(branchLoaderState: LoaderState.loading);
+      }
+
+      final result = await _repo.getBranches();
+
+      result.fold(
+        (error) {
+          state = state.copyWith(
+            branchLoaderState: isRefresh
+                ? state.branchLoaderState
+                : LoaderState.error,
+          );
+        },
+        (response) {
+          state = state.copyWith(
+            branchLoaderState: LoaderState.loaded,
+            branches: response.data,
+          );
+        },
+      );
+    }
   }
 
   Future<void> getAttendance({
@@ -127,6 +156,6 @@ class HrAttendanceNotifier extends _$HrAttendanceNotifier {
   void updateBranch(String branch) {
     if (state.branch == branch) return;
     state = state.copyWith(branch: branch);
-    getAttendance();
+    getAttendance(isRefresh: true);
   }
 }

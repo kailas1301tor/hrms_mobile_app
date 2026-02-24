@@ -38,9 +38,22 @@ class _StaffSalaryScreenState extends ConsumerState<StaffSalaryScreen> {
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 24.h),
-                child: Text(
-                  'Earnings Statement',
-                  style: PlusJakartaSansFontPalette.f0E0F0C_32_700,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Earnings Statement',
+                      style: PlusJakartaSansFontPalette.f0E0F0C_32_700,
+                    ),
+                    16.verticalSpace,
+                    Row(
+                      children: [
+                        Expanded(child: _buildMonthDropdown()),
+                        12.horizontalSpace,
+                        Expanded(child: _buildYearDropdown()),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               Expanded(
@@ -57,8 +70,17 @@ class _StaffSalaryScreenState extends ConsumerState<StaffSalaryScreen> {
                     itemBuilder: (context, index) =>
                         const PulseRecentPayslipCardShimmer(),
                   ),
+                  noData: Center(
+                    child: Text(
+                      'No payslips found',
+                      style: PlusJakartaSansFontPalette.base600(
+                        14,
+                        color: ColorPalette.f0E0F0C,
+                      ),
+                    ),
+                  ),
                   child: RefreshIndicator(
-                    onRefresh: () => ref
+                    onRefresh: () async => ref
                         .read(staffSalaryProvider.notifier)
                         .fetchSalaryHistory(isRefresh: true),
                     color: ColorPalette.primaryColor,
@@ -77,6 +99,131 @@ class _StaffSalaryScreenState extends ConsumerState<StaffSalaryScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMonthDropdown() {
+    final months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int>(
+          value: ref.watch(staffSalaryProvider.select((s) => s.selectedMonth)),
+          hint: Text(
+            'Month',
+            style: PlusJakartaSansFontPalette.base600(
+              14,
+              color: const Color(0xFF64748B),
+            ),
+          ),
+          isExpanded: true,
+          icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF64748B)),
+          items: [
+            DropdownMenuItem<int>(
+              value: null,
+              child: Text(
+                'All Months',
+                style: PlusJakartaSansFontPalette.base600(
+                  14,
+                  color: ColorPalette.f0E0F0C,
+                ),
+              ),
+            ),
+            ...List.generate(12, (index) {
+              return DropdownMenuItem<int>(
+                value: index + 1,
+                child: Text(
+                  months[index],
+                  style: PlusJakartaSansFontPalette.base600(
+                    14,
+                    color: ColorPalette.f0E0F0C,
+                  ),
+                ),
+              );
+            }),
+          ],
+          onChanged: (value) {
+            ref.read(staffSalaryProvider.notifier).updateMonthFilter(value);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildYearDropdown() {
+    final currentYear = DateTime.now().year;
+    final years = List.generate(
+      5,
+      (index) => currentYear - index,
+    ); // Last 5 years
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int>(
+          value: ref.watch(staffSalaryProvider.select((s) => s.selectedYear)),
+          hint: Text(
+            'Year',
+            style: PlusJakartaSansFontPalette.base600(
+              14,
+              color: const Color(0xFF64748B),
+            ),
+          ),
+          isExpanded: true,
+          icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF64748B)),
+          items: [
+            DropdownMenuItem<int>(
+              value: null,
+              child: Text(
+                'All Years',
+                style: PlusJakartaSansFontPalette.base600(
+                  14,
+                  color: ColorPalette.f0E0F0C,
+                ),
+              ),
+            ),
+            ...years.map((year) {
+              return DropdownMenuItem<int>(
+                value: year,
+                child: Text(
+                  year.toString(),
+                  style: PlusJakartaSansFontPalette.base600(
+                    14,
+                    color: ColorPalette.f0E0F0C,
+                  ),
+                ),
+              );
+            }),
+          ],
+          onChanged: (value) {
+            ref.read(staffSalaryProvider.notifier).updateYearFilter(value);
+          },
         ),
       ),
     );

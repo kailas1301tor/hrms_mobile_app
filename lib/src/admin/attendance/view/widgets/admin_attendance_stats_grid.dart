@@ -30,29 +30,41 @@ class AdminAttendanceStatsGrid extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       childAspectRatio: 1.6,
       children: [
-        _AdminStatCard(
+        _AdminStatCard( 
           label: "PRESENT",
           value: "${summary?.present ?? 0}",
-          stripeColor: ColorPalette.primaryColor,
-          valueColor: ColorPalette.primaryColor,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF10B981), Color(0xFF047857)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
         _AdminStatCard(
           label: "ABSENT",
           value: "${summary?.absent ?? 0}",
-          stripeColor: ColorPalette.fFF0000,
-          valueColor: ColorPalette.fFF0000,
+          gradient: const LinearGradient(
+            colors: [Color(0xFFEF4444), Color(0xFFB91C1C)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
         _AdminStatCard(
           label: "LATE ARRIVALS",
           value: "${summary?.late ?? 0}",
-          stripeColor: ColorPalette.fFF7C34,
-          valueColor: ColorPalette.fFF7C34,
+          gradient: const LinearGradient(
+            colors: [Color(0xFFF97316), Color(0xFFC2410C)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
         _AdminStatCard(
           label: "ON LEAVE",
           value: "${summary?.onLeave ?? 0}",
-          stripeColor: const Color(0xFFC0C7CD),
-          valueColor: ColorPalette.f101828,
+          gradient: const LinearGradient(
+            colors: [Color(0xFFF59E0B), Color(0xFFB45309)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
       ],
     );
@@ -62,58 +74,50 @@ class AdminAttendanceStatsGrid extends ConsumerWidget {
 class _AdminStatCard extends StatelessWidget {
   final String label;
   final String value;
-  final Color stripeColor;
-  final Color valueColor;
+  final LinearGradient gradient;
 
   const _AdminStatCard({
     required this.label,
     required this.value,
-    required this.stripeColor,
-    required this.valueColor,
+    required this.gradient,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: ShapeDecoration(
-        color: stripeColor,
+        gradient: gradient,
         shape: SmoothRectangleBorder(
           borderRadius: BorderRadius.circular(28.r),
           smoothness: 1,
         ),
         shadows: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            offset: const Offset(0, 1),
-            blurRadius: 16,
+            color: gradient.colors.last.withValues(alpha: 0.4),
+            offset: const Offset(0, 4),
+            blurRadius: 12,
           ),
         ],
       ),
-      child: SmoothContainer(
-        margin: EdgeInsets.only(bottom: 6.h),
-        smoothness: 1,
-        borderRadius: BorderRadius.circular(23.r),
-        color: ColorPalette.white,
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              label,
-              style: PlusJakartaSansFontPalette.base700(
-                11,
-                color: const Color(0xFF94A3B8),
-                letterSpacing: 1.2,
-              ),
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: PlusJakartaSansFontPalette.base700(
+              11,
+              color: Colors.white.withValues(alpha: 0.9),
+              letterSpacing: 1.2,
             ),
-            4.verticalSpace,
-            Text(
-              value,
-              style: PlusJakartaSansFontPalette.base700(36, color: valueColor),
-            ),
-          ],
-        ),
+          ),
+          4.verticalSpace,
+          Text(
+            value,
+            style: PlusJakartaSansFontPalette.base700(36, color: Colors.white),
+          ),
+        ],
       ),
     );
   }
@@ -134,44 +138,38 @@ class _AdminAttendanceStatsShimmer extends StatelessWidget {
       children: List.generate(4, (index) {
         return Container(
           decoration: ShapeDecoration(
-            color: const Color(0xFFE2E8F0),
+            color: ColorPalette.white,
             shape: SmoothRectangleBorder(
               borderRadius: BorderRadius.circular(28.r),
               smoothness: 1,
             ),
           ),
-          child: SmoothContainer(
-            margin: EdgeInsets.only(bottom: 6.h),
-            smoothness: 1,
-            borderRadius: BorderRadius.circular(23.r),
-            color: ColorPalette.white,
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-            child: Shimmer.fromColors(
-              baseColor: const Color(0xFFE2E8F0),
-              highlightColor: const Color(0xFFF8FAFC),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 80.w,
-                    height: 10.h,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+          child: Shimmer.fromColors(
+            baseColor: const Color(0xFFE2E8F0),
+            highlightColor: const Color(0xFFF8FAFC),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 80.w,
+                  height: 10.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4.r),
                   ),
-                  12.verticalSpace,
-                  Container(
-                    width: 50.w,
-                    height: 32.h,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
+                ),
+                12.verticalSpace,
+                Container(
+                  width: 50.w,
+                  height: 32.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );

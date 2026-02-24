@@ -9,7 +9,10 @@ import '../../../data/remote/network_base_services.dart';
 import '../../home/model/staff_payslip_response.dart';
 
 abstract class StaffSalaryRepo {
-  Future<Either<ResponseError, List<StaffPayslipResponse>>> getSalaryHistory();
+  Future<Either<ResponseError, List<StaffPayslipResponse>>> getSalaryHistory({
+    int? year,
+    int? month,
+  });
   Future<Either<ResponseError, String>> downloadPayslip({
     required String id,
     required String fileName,
@@ -96,13 +99,26 @@ class StaffSalaryRepoImpl implements StaffSalaryRepo {
   }
 
   @override
-  Future<Either<ResponseError, List<StaffPayslipResponse>>> getSalaryHistory() {
+  Future<Either<ResponseError, List<StaffPayslipResponse>>> getSalaryHistory({
+    int? year,
+    int? month,
+  }) {
+    String endPoint = "${AppConstants.prefix}/payroll/my-payslips";
+    final queryParams = <String>[];
+
+    if (year != null) {
+      queryParams.add("year=$year");
+    }
+    if (month != null) {
+      queryParams.add("month=$month");
+    }
+
+    if (queryParams.isNotEmpty) {
+      endPoint += "?${queryParams.join('&')}";
+    }
+
     return services
-        .safe(
-          services.getRequest(
-            endPoint: "${AppConstants.prefix}/payroll/my-payslips",
-          ),
-        )
+        .safe(services.getRequest(endPoint: endPoint))
         .thenRight(services.checkHttpStatus)
         .thenRight(services.parseJson)
         .mapRight((right) {

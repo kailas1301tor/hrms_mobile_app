@@ -25,7 +25,7 @@ class HrAttendanceStatsGrid extends ConsumerWidget {
     return GridView.count(
       crossAxisCount: 2,
       crossAxisSpacing: 16.w,
-      mainAxisSpacing: 16.h,
+      mainAxisSpacing: 16.h, 
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       childAspectRatio: 1.6,
@@ -33,26 +33,38 @@ class HrAttendanceStatsGrid extends ConsumerWidget {
         _HrStatCard(
           label: "PRESENT",
           value: "${summary?.present ?? 0}",
-          stripeColor: ColorPalette.primaryColor,
-          valueColor: ColorPalette.primaryColor,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF10B981), Color(0xFF047857)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
         _HrStatCard(
           label: "ABSENT",
           value: "${summary?.absent ?? 0}",
-          stripeColor: ColorPalette.fFF0000,
-          valueColor: ColorPalette.fFF0000,
+          gradient: const LinearGradient(
+            colors: [Color(0xFFEF4444), Color(0xFFB91C1C)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
         _HrStatCard(
           label: "LATE ARRIVALS",
           value: "${summary?.late ?? 0}",
-          stripeColor: ColorPalette.fFF7C34,
-          valueColor: ColorPalette.fFF7C34,
+          gradient: const LinearGradient(
+            colors: [Color(0xFFF97316), Color(0xFFC2410C)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
         _HrStatCard(
           label: "ON LEAVE",
           value: "${summary?.onLeave ?? 0}",
-          stripeColor: const Color(0xFFC0C7CD),
-          valueColor: ColorPalette.f101828,
+          gradient: const LinearGradient(
+            colors: [Color(0xFFF59E0B), Color(0xFFB45309)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
       ],
     );
@@ -62,58 +74,49 @@ class HrAttendanceStatsGrid extends ConsumerWidget {
 class _HrStatCard extends StatelessWidget {
   final String label;
   final String value;
-  final Color stripeColor;
-  final Color valueColor;
-
   const _HrStatCard({
     required this.label,
     required this.value,
-    required this.stripeColor,
-    required this.valueColor,
+    required this.gradient,
   });
+  final LinearGradient gradient;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: ShapeDecoration(
-        color: stripeColor,
+        gradient: gradient,
         shape: SmoothRectangleBorder(
           borderRadius: BorderRadius.circular(28.r),
           smoothness: 1,
         ),
         shadows: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            offset: const Offset(0, 1),
-            blurRadius: 16,
+            color: gradient.colors.last.withValues(alpha: 0.4),
+            offset: const Offset(0, 4),
+            blurRadius: 12,
           ),
         ],
       ),
-      child: SmoothContainer(
-        margin: EdgeInsets.only(bottom: 6.h),
-        smoothness: 1,
-        borderRadius: BorderRadius.circular(23.r),
-        color: ColorPalette.white,
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              label,
-              style: PlusJakartaSansFontPalette.base700(
-                11,
-                color: const Color(0xFF94A3B8),
-                letterSpacing: 1.2,
-              ),
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: PlusJakartaSansFontPalette.base700(
+              11,
+              color: Colors.white.withValues(alpha: 0.9),
+              letterSpacing: 1.2,
             ),
-            4.verticalSpace,
-            Text(
-              value,
-              style: PlusJakartaSansFontPalette.base700(36, color: valueColor),
-            ),
-          ],
-        ),
+          ),
+          4.verticalSpace,
+          Text(
+            value,
+            style: PlusJakartaSansFontPalette.base700(36, color: Colors.white),
+          ),
+        ],
       ),
     );
   }

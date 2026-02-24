@@ -13,6 +13,9 @@ class HrAttendanceState {
   final int currentPage;
   final bool isLoadMore;
 
+  final List<String> branches;
+  final LoaderState branchLoaderState;
+
   final Map<String, HrAttendanceResponse> dataCache;
 
   HrAttendanceState({
@@ -23,9 +26,11 @@ class HrAttendanceState {
     this.error,
     required this.date,
     this.status = 'ALL',
-    this.branch = 'All Branches (UAE)',
+    this.branch = 'All Branches',
     this.currentPage = 1,
     this.isLoadMore = false,
+    this.branches = const [],
+    this.branchLoaderState = LoaderState.loading,
     this.dataCache = const {},
   });
 
@@ -40,6 +45,8 @@ class HrAttendanceState {
     String? branch,
     int? currentPage,
     bool? isLoadMore,
+    List<String>? branches,
+    LoaderState? branchLoaderState,
     Map<String, HrAttendanceResponse>? dataCache,
   }) {
     return HrAttendanceState(
@@ -53,6 +60,8 @@ class HrAttendanceState {
       branch: branch ?? this.branch,
       currentPage: currentPage ?? this.currentPage,
       isLoadMore: isLoadMore ?? this.isLoadMore,
+      branches: branches ?? this.branches,
+      branchLoaderState: branchLoaderState ?? this.branchLoaderState,
       dataCache: dataCache ?? this.dataCache,
     );
   }

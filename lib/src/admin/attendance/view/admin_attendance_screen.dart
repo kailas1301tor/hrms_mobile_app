@@ -6,6 +6,7 @@ import 'widgets/admin_attendance_stats_grid.dart';
 import 'widgets/admin_attendance_filter.dart';
 import 'widgets/admin_attendance_list.dart';
 
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../utils/common_widgets/common_switch_state.dart';
 import 'package:hrms_mobile/src/admin/attendance/notifier/attendance_notifier.dart';
@@ -15,6 +16,7 @@ class AdminAttendanceScreen extends ConsumerWidget {
 
   Future<void> _onRefresh(WidgetRef ref) async {
     await ref.read(attendanceProvider.notifier).getAttendance(isRefresh: true);
+    await ref.read(attendanceProvider.notifier).getBranches(isRefresh: true);
   }
 
   @override

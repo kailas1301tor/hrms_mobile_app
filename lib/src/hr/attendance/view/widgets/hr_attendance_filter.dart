@@ -5,13 +5,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 import '../../../../../res/styles/color_palette.dart';
 import '../../../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
+import '../../../common/widgets/hr_branch_selector.dart';
 
 class HrAttendanceFilter extends ConsumerStatefulWidget {
   const HrAttendanceFilter({super.key});
 
   @override
-  ConsumerState<HrAttendanceFilter> createState() =>
-      _HrAttendanceFilterState();
+  ConsumerState<HrAttendanceFilter> createState() => _HrAttendanceFilterState();
 }
 
 class _HrAttendanceFilterState extends ConsumerState<HrAttendanceFilter> {
@@ -25,6 +25,7 @@ class _HrAttendanceFilterState extends ConsumerState<HrAttendanceFilter> {
 
     return Column(
       children: [
+        const HrBranchSelector(),
         16.verticalSpace,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -35,7 +36,9 @@ class _HrAttendanceFilterState extends ConsumerState<HrAttendanceFilter> {
                 padding: EdgeInsets.only(right: filter == "LATE" ? 0 : 8.w),
                 child: GestureDetector(
                   onTap: () {
-                    ref.read(hrAttendanceProvider.notifier).updateStatus(filter);
+                    ref
+                        .read(hrAttendanceProvider.notifier)
+                        .updateStatus(filter);
                   },
                   child: SmoothContainer(
                     smoothness: 2,

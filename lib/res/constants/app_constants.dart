@@ -30,5 +30,6 @@ class AppConstants {
   static String mobileStats = "$prefix/dashboard/mobile-stats";
   static String pendingApprovals = "$prefix/dashboard/pending-approvals";
   static String attendance = "$prefix/attendance";
+  static String branches = "$prefix/branches";
   static String logout = "$prefix$auth/logout";
 }

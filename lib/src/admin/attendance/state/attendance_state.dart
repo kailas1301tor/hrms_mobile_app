@@ -13,6 +13,9 @@ class AttendanceState {
   final int currentPage;
   final bool isLoadMore;
 
+  final List<String> branches;
+  final LoaderState branchLoaderState;
+
   final Map<String, AdminAttendanceResponse> dataCache;
 
   AttendanceState({
@@ -23,9 +26,11 @@ class AttendanceState {
     this.error,
     required this.date,
     this.status = 'ALL',
-    this.branch = 'All Branches (UAE)',
+    this.branch = 'All Branches',
     this.currentPage = 1,
     this.isLoadMore = false,
+    this.branches = const [],
+    this.branchLoaderState = LoaderState.loading,
     this.dataCache = const {},
   });
 
@@ -40,6 +45,8 @@ class AttendanceState {
     String? branch,
     int? currentPage,
     bool? isLoadMore,
+    List<String>? branches,
+    LoaderState? branchLoaderState,
     Map<String, AdminAttendanceResponse>? dataCache,
   }) {
     return AttendanceState(
@@ -53,6 +60,8 @@ class AttendanceState {
       branch: branch ?? this.branch,
       currentPage: currentPage ?? this.currentPage,
       isLoadMore: isLoadMore ?? this.isLoadMore,
+      branches: branches ?? this.branches,
+      branchLoaderState: branchLoaderState ?? this.branchLoaderState,
       dataCache: dataCache ?? this.dataCache,
     );
   }

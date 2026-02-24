@@ -21,7 +21,10 @@ class StaffSalaryNotifier extends _$StaffSalaryNotifier {
 
     state = state.copyWith(loaderState: LoaderState.loading);
 
-    final result = await _repo.getSalaryHistory();
+    final result = await _repo.getSalaryHistory(
+      year: state.selectedYear,
+      month: state.selectedMonth,
+    );
 
     result.fold(
       (error) {
@@ -32,11 +35,23 @@ class StaffSalaryNotifier extends _$StaffSalaryNotifier {
       },
       (payslips) {
         state = state.copyWith(
-          loaderState: LoaderState.loaded,
+          loaderState: payslips.isEmpty
+              ? LoaderState.noData
+              : LoaderState.loaded,
           payslips: payslips,
         );
       },
     );
+  }
+
+  void updateMonthFilter(int? month) {
+    state = state.copyWith(selectedMonth: month, clearMonth: month == null);
+    fetchSalaryHistory(isRefresh: true);
+  }
+
+  void updateYearFilter(int? year) {
+    state = state.copyWith(selectedYear: year, clearYear: year == null);
+    fetchSalaryHistory(isRefresh: true);
   }
 
   Future<String?> downloadPayslip(String id, String fileName) async {

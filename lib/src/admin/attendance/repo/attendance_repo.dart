@@ -3,6 +3,7 @@ import 'package:hrms_mobile/data/remote/network_base_services.dart';
 import 'package:hrms_mobile/data/remote/network_services.dart';
 import 'package:hrms_mobile/res/constants/app_constants.dart';
 import '../model/admin_attendance_response.dart';
+import '../model/branch_response.dart';
 
 abstract class AttendanceRepo {
   Future<Either<ResponseError, AdminAttendanceResponse>> getAttendance({
@@ -12,6 +13,8 @@ abstract class AttendanceRepo {
     String? status,
     String? branch,
   });
+
+  Future<Either<ResponseError, BranchResponse>> getBranches();
 }
 
 class AttendanceRepoImpl extends AttendanceRepo {
@@ -38,7 +41,7 @@ class AttendanceRepoImpl extends AttendanceRepo {
     }
 
     // Branch handling might need adjustment depending on how backend expects it
-    if (branch != null && branch != 'All Branches (UAE)') {
+    if (branch != null && branch != 'All Branches') {
       queryParameters['branch'] = branch;
     }
 
@@ -52,5 +55,27 @@ class AttendanceRepoImpl extends AttendanceRepo {
         .thenRight(services.checkHttpStatus)
         .thenRight(services.parseJson)
         .mapRight((right) => AdminAttendanceResponse.fromJson(right));
+  }
+
+  @override
+  Future<Either<ResponseError, BranchResponse>> getBranches() async {
+    return services
+        .safe(
+          services.getRequest(
+            endPoint: "${AppConstants.prefix}/masters/branches",
+          ),
+        )
+        .thenRight(services.checkHttpStatus)
+        .thenRight(services.parseJson)
+        .mapRight((right) {
+          if (right is List) {
+            final List<String> branches = ["All Branches"];
+            branches.addAll(
+              right.map((item) => item['name'] as String).toList(),
+            );
+            return BranchResponse(data: branches);
+          }
+          return BranchResponse(data: ["All Branches"]);
+        });
   }
 }

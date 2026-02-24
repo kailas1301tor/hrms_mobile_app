@@ -17,7 +17,7 @@ class HrAttendanceFilterState {
 class HrAttendanceFilterNotifier extends Notifier<HrAttendanceFilterState> {
   @override
   HrAttendanceFilterState build() {
-    return HrAttendanceFilterState(branch: "All Branches (UAE)", status: "ALL");
+    return HrAttendanceFilterState(branch: "All Branches", status: "ALL");
   }
 
   void setBranch(String branch) {
