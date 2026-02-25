@@ -100,7 +100,7 @@ class LoginNotifier extends _$LoginNotifier {
     if (!ref.mounted) return;
     state = state.copyWith(isLoading: true);
 
-    loginRepo
+    await loginRepo
         .logout()
         .then((result) {
           result.fold(

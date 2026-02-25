@@ -62,14 +62,13 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
         actionButtonText: 'Logout',
         cancelButtonText: 'Cancel',
         onActionPressed: () async {
-          ref.read(loginProvider.notifier).logout(() {
+          return await ref.read(loginProvider.notifier).logout(() {
             Navigator.pushNamedAndRemoveUntil(
               context,
               RouteConstants.routeLoginScreen,
               (route) => false,
             );
           });
-          ref.invalidate(adminSelectedTabProvider);
         },
       ),
     );
@@ -139,19 +138,6 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
         ),
       ),
     );
-  }
-
-  String _getHeading(int index) {
-    switch (index) {
-      case 0:
-        return "Strategic Overview";
-      case 1:
-        return "Attendance Ledger";
-      case 2:
-        return "Request Management";
-      default:
-        return "Strategic Overview";
-    }
   }
 }
 

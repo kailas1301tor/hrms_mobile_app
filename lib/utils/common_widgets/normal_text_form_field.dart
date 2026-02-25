@@ -36,6 +36,7 @@ class CommonTextFormField extends StatefulWidget {
     this.prefix,
     this.maxLines = 1,
     this.textAlignVertical,
+    this.scrollPadding = const EdgeInsets.all(20.0),
   });
 
   final TextEditingController controller;
@@ -66,6 +67,7 @@ class CommonTextFormField extends StatefulWidget {
   final Widget? prefix;
   final int? maxLines;
   final TextAlignVertical? textAlignVertical;
+  final EdgeInsets scrollPadding;
 
   @override
   State<CommonTextFormField> createState() => _CommonTextFormFieldState();
@@ -214,6 +216,7 @@ class _CommonTextFormFieldState extends State<CommonTextFormField> {
           textAlign: TextAlign.start,
           textAlignVertical:
               widget.textAlignVertical ?? TextAlignVertical.center,
+          scrollPadding: widget.scrollPadding,
           onTap: widget.onTap,
           onTapOutside: (event) {
             if (!mounted) return;

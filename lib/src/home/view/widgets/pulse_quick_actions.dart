@@ -5,6 +5,7 @@ import 'package:smooth_corner/smooth_corner.dart';
 import '../../../../res/styles/color_palette.dart';
 import '../../../../res/styles/fonts/plus_jakarta_sans_font_palette.dart';
 import '../../../main/view/main_screen.dart';
+import '../../../track/view/track_screen.dart';
 
 class PulseQuickActions extends ConsumerWidget {
   const PulseQuickActions({super.key});
@@ -33,6 +34,7 @@ class PulseQuickActions extends ConsumerWidget {
             backgroundColor: ColorPalette.fEEF3FF,
             onTap: () {
               ref.read(selectedTabProvider.notifier).set(1);
+              selectedIndex.value = 1;
             },
           ),
         ),
@@ -45,6 +47,7 @@ class PulseQuickActions extends ConsumerWidget {
             backgroundColor: ColorPalette.fF6F6F6,
             onTap: () {
               ref.read(selectedTabProvider.notifier).set(1);
+              selectedIndex.value = 2;
             },
           ),
         ),

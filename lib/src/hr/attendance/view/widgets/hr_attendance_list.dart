@@ -97,7 +97,7 @@ class HrAttendanceList extends ConsumerWidget {
               final String initial = name.isNotEmpty
                   ? name[0].toUpperCase()
                   : "?";
-              final String branch = item.department ?? "HQ";
+              final String branch = _formatBranch(item.branch, item.department);
 
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -198,6 +198,18 @@ class HrAttendanceList extends ConsumerWidget {
           ),
       ],
     );
+  }
+
+  String _formatBranch(String? branch, String? department) {
+    final bool hasBranch = branch != null && branch.isNotEmpty;
+    final bool hasDept = department != null && department.isNotEmpty;
+
+    if (hasBranch && hasDept) {
+      return "$branch \u2022 $department";
+    }
+    if (hasBranch) return branch;
+    if (hasDept) return department;
+    return "-";
   }
 }
 

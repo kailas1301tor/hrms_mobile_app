@@ -21,7 +21,9 @@ class PulseHeaderCard extends StatelessWidget {
 
     checkInTime = attendanceRecord?.checkIn ?? "-";
 
-    statusIconColor = (attendanceRecord?.status == 'On Leave')
+    statusIconColor =
+        (attendanceRecord?.status?.toLowerCase() == ('on leave') ||
+            attendanceRecord?.status?.toLowerCase() == ('absent'))
         ? ColorPalette.fFF2727
         : ColorPalette.f1CB42F;
 

@@ -8,15 +8,15 @@ import 'package:hrms_mobile/src/track/notifier/track_notifier.dart';
 import 'package:hrms_mobile/utils/common_widgets/normal_text_form_field.dart';
 import 'package:hrms_mobile/utils/common_widgets/primary_button.dart';
 
-class NewLeaveRequestDialog extends ConsumerStatefulWidget {
-  const NewLeaveRequestDialog({super.key});
+class NewLeaveRequestScreen extends ConsumerStatefulWidget {
+  const NewLeaveRequestScreen({super.key});
 
   @override
-  ConsumerState<NewLeaveRequestDialog> createState() =>
-      _NewLeaveRequestDialogState();
+  ConsumerState<NewLeaveRequestScreen> createState() =>
+      _NewLeaveRequestScreenState();
 }
 
-class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
+class _NewLeaveRequestScreenState extends ConsumerState<NewLeaveRequestScreen> {
   static const int _maxReasonLength = 300;
 
   final _reasonController = TextEditingController();
@@ -145,34 +145,34 @@ class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
     final leaveTypes = state.leaveTypes ?? [];
     final createLoader = state.createRequestLoader;
 
-    final viewInsets = MediaQuery.of(context).viewInsets;
-    final maxHeight = MediaQuery.of(context).size.height * 0.85;
-
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: Container(
-        constraints: BoxConstraints(maxHeight: maxHeight),
-        padding: EdgeInsets.all(
-          24.w,
-        ).copyWith(bottom: 24.w + viewInsets.bottom),
-        decoration: BoxDecoration(
-          color: ColorPalette.white,
-          borderRadius: BorderRadius.circular(20.r),
+    return Scaffold(
+      backgroundColor: const Color(0XFFF8F9FB),
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: Text(
+          'New Leave Request',
+          style: PlusJakartaSansFontPalette.base700(
+            18.sp,
+            color: ColorPalette.f101828,
+          ),
         ),
+        backgroundColor: ColorPalette.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: ColorPalette.f101828),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.h),
+          child: Container(
+            color: ColorPalette.fE5E7EB.withValues(alpha: 0.5),
+            height: 1.h,
+          ),
+        ),
+      ),
+      body: SafeArea(
         child: SingleChildScrollView(
+          padding: EdgeInsets.all(24.w),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'New leave request',
-                style: PlusJakartaSansFontPalette.base700(
-                  18,
-                  color: ColorPalette.f101828,
-                ),
-                textAlign: TextAlign.center,
-              ),
               16.verticalSpace,
               Text(
                 'Leave type',
@@ -193,7 +193,7 @@ class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           DropdownButtonFormField<LeaveTypeItem>(
-                            value: selected,
+                            initialValue: selected,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.r),
@@ -406,8 +406,8 @@ class _NewLeaveRequestDialogState extends ConsumerState<NewLeaveRequestDialog> {
                     hintText:
                         'e.g. Personal Leave (max $_maxReasonLength characters)',
                     maxLines: 8,
-
                     maxLength: _maxReasonLength,
+                    scrollPadding: EdgeInsets.only(bottom: 120.h),
                     onChanged: (_) => _reasonError.value = null,
                   );
                 },

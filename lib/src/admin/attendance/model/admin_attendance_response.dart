@@ -99,6 +99,7 @@ class AttendanceRecord {
   String? checkOut;
   String? workHours;
   String? status;
+  String? branch;
   bool? isManuallyEdited;
 
   AttendanceRecord({
@@ -113,6 +114,7 @@ class AttendanceRecord {
     this.workHours,
     this.status,
     this.isManuallyEdited,
+    this.branch,
   });
 
   AttendanceRecord.fromJson(Map<String, dynamic> json) {
@@ -127,6 +129,7 @@ class AttendanceRecord {
     workHours = json['workHours'];
     status = json['status'];
     isManuallyEdited = json['isManuallyEdited'];
+    branch = json['branch'];
   }
 
   Map<String, dynamic> toJson() {
@@ -142,6 +145,7 @@ class AttendanceRecord {
     data['workHours'] = workHours;
     data['status'] = status;
     data['isManuallyEdited'] = isManuallyEdited;
+    data['branch'] = branch;
     return data;
   }
 }

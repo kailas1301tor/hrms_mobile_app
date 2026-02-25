@@ -7,9 +7,9 @@ import 'package:hrms_mobile/src/track/view/widgets/advances_section.dart';
 import 'package:hrms_mobile/src/track/view/widgets/filing_tab_selector.dart';
 import 'package:hrms_mobile/src/track/view/widgets/leaves_section.dart';
 import 'package:hrms_mobile/src/track/view/widgets/loans_section.dart';
-import 'package:hrms_mobile/src/track/view/widgets/new_advance_request_dialog.dart';
-import 'package:hrms_mobile/src/track/view/widgets/new_leave_request_dialog.dart';
-import 'package:hrms_mobile/src/track/view/widgets/new_loan_request_dialog.dart';
+import 'package:hrms_mobile/src/track/view/new_advance_request_screen.dart';
+import 'package:hrms_mobile/src/track/view/new_leave_request_screen.dart';
+import 'package:hrms_mobile/src/track/view/new_loan_request_screen.dart';
 import 'package:hrms_mobile/src/track/view/widgets/track_header.dart';
 import 'package:hrms_mobile/utils/common_widgets/common_switch_state.dart';
 
@@ -20,9 +20,9 @@ class TrackScreen extends ConsumerStatefulWidget {
   ConsumerState<TrackScreen> createState() => _TrackScreenState();
 }
 
-class _TrackScreenState extends ConsumerState<TrackScreen> {
-  final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
+final ValueNotifier<int> selectedIndex = ValueNotifier<int>(0);
 
+class _TrackScreenState extends ConsumerState<TrackScreen> {
   @override
   void initState() {
     super.initState();
@@ -37,7 +37,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
 
   @override
   void dispose() {
-    _selectedIndex.dispose();
+    selectedIndex.dispose();
     super.dispose();
   }
 
@@ -55,7 +55,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ValueListenableBuilder<int>(
-                  valueListenable: _selectedIndex,
+                  valueListenable: selectedIndex,
                   builder: (context, value, child) {
                     return TrackHeader(
                       selectedIndex: value,
@@ -64,19 +64,19 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
                   },
                 ),
                 ValueListenableBuilder<int>(
-                  valueListenable: _selectedIndex,
+                  valueListenable: selectedIndex,
                   builder: (context, value, child) {
                     return FilingTabSelector(
                       selectedIndex: value,
                       onTabSelected: (index) {
-                        _selectedIndex.value = index;
+                        selectedIndex.value = index;
                       },
                     );
                   },
                 ),
                 Expanded(
                   child: ValueListenableBuilder<int>(
-                    valueListenable: _selectedIndex,
+                    valueListenable: selectedIndex,
                     builder: (context, value, child) {
                       return _buildSection(value);
                     },
@@ -91,27 +91,21 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
   }
 
   void _onNewEntry(BuildContext context) {
-    switch (_selectedIndex.value) {
+    switch (selectedIndex.value) {
       case 0:
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => const NewLeaveRequestDialog(),
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const NewLeaveRequestScreen()),
         );
         break;
       case 1:
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => const NewAdvanceRequestDialog(),
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const NewAdvanceRequestScreen()),
         );
         break;
       case 2:
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (_) => const NewLoanRequestDialog(),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const NewLoanRequestScreen()));
         break;
       default:
         break;

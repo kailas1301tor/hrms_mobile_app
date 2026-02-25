@@ -77,19 +77,36 @@ class CustomCommonAppBar extends StatelessWidget
             padding: EdgeInsets.all(2.r),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: ColorPalette.fE5E7EB, width: 1.w),
+              border: Border.all(color: ColorPalette.primaryColor, width: 1.w),
             ),
             child: CircleAvatar(
               radius: 20.r,
-              backgroundColor: ColorPalette.transparent,
-              backgroundImage: const NetworkImage(
-                'https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg',
+              backgroundColor: ColorPalette.primaryColor.withValues(alpha: 0.1),
+              child: Text(
+                _getInitial(),
+                style: TextStyle(
+                  fontFamily: PlusJakartaSansFontPalette.plusJakartaSansFamily,
+                  fontSize: 17.sp,
+                  fontWeight: FontWeight.w700,
+                  color: ColorPalette.primaryColor,
+                  letterSpacing: 1.2,
+                ),
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _getInitial() {
+    if (AppConstants.user.isEmpty) {
+      if (title != null && title!.isNotEmpty) {
+        return title!.substring(0, 1);
+      }
+      return "";
+    }
+    return AppConstants.user.substring(0, 1);
   }
 
   @override

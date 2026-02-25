@@ -94,6 +94,7 @@ class AttendanceRecord {
   String? name;
   String? code;
   String? department;
+  String? branch;
   String? shift;
   String? checkIn;
   String? checkOut;
@@ -127,6 +128,7 @@ class AttendanceRecord {
     workHours = json['workHours'];
     status = json['status'];
     isManuallyEdited = json['isManuallyEdited'];
+    branch = json['branch'];
   }
 
   Map<String, dynamic> toJson() {
@@ -142,6 +144,7 @@ class AttendanceRecord {
     data['workHours'] = workHours;
     data['status'] = status;
     data['isManuallyEdited'] = isManuallyEdited;
+    data['branch'] = branch;
     return data;
   }
 }

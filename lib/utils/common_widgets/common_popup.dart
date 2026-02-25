@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hrms_mobile/res/styles/color_palette.dart';
@@ -5,11 +6,11 @@ import 'package:hrms_mobile/res/styles/fonts/plus_jakarta_sans_font_palette.dart
 import 'package:hrms_mobile/utils/common_widgets/primary_button.dart';
 import 'package:smooth_corner/smooth_corner.dart';
 
-class CommonPopup extends StatelessWidget {
+class CommonPopup extends StatefulWidget {
   final String title;
   final String message;
   final String actionButtonText;
-  final VoidCallback onActionPressed;
+  final FutureOr<void> Function() onActionPressed;
   final String? cancelButtonText;
   final VoidCallback? onCancelPressed;
 
@@ -22,6 +23,28 @@ class CommonPopup extends StatelessWidget {
     this.cancelButtonText,
     this.onCancelPressed,
   });
+
+  @override
+  State<CommonPopup> createState() => _CommonPopupState();
+}
+
+class _CommonPopupState extends State<CommonPopup> {
+  bool _isLoading = false;
+
+  Future<void> _handleAction() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      await widget.onActionPressed();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +61,7 @@ class CommonPopup extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              title,
+              widget.title,
               style: PlusJakartaSansFontPalette.base700(
                 18,
                 color: ColorPalette.f0E0F0C,
@@ -47,7 +70,7 @@ class CommonPopup extends StatelessWidget {
             ),
             16.verticalSpace,
             Text(
-              message,
+              widget.message,
               style: PlusJakartaSansFontPalette.base400(
                 14,
                 color: ColorPalette.f6D6D6D,
@@ -57,11 +80,13 @@ class CommonPopup extends StatelessWidget {
             24.verticalSpace,
             Row(
               children: [
-                if (cancelButtonText != null) ...[
+                if (widget.cancelButtonText != null) ...[
                   Expanded(
                     child: TextButton(
-                      onPressed:
-                          onCancelPressed ?? () => Navigator.pop(context),
+                      onPressed: _isLoading
+                          ? null
+                          : widget.onCancelPressed ??
+                                () => Navigator.pop(context),
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.symmetric(vertical: 16.h),
                         shape: RoundedRectangleBorder(
@@ -69,7 +94,7 @@ class CommonPopup extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        cancelButtonText!,
+                        widget.cancelButtonText!,
                         style: PlusJakartaSansFontPalette.base600(
                           16,
                           color: ColorPalette.f6D6D6D,
@@ -81,9 +106,10 @@ class CommonPopup extends StatelessWidget {
                 ],
                 Expanded(
                   child: PrimaryButton(
-                    onPressed: onActionPressed,
-                    buttonText: actionButtonText,
+                    onPressed: _isLoading ? null : _handleAction,
+                    buttonText: widget.actionButtonText,
                     height: 50.h,
+                    isLoading: _isLoading,
                     color: ColorPalette.fE53B40, // Red for logout/danger
                   ),
                 ),

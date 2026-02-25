@@ -214,78 +214,72 @@ class _CommonTabErrorOrNoDataWidgetState
       },
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: Column(
-          children: [
-            SingleChildScrollView(
-              physics:
-                  widget.scrollPhysics ?? const NeverScrollableScrollPhysics(),
-              child: SizedBox(
-                width: context.sw(),
-                child: Column(
-                  mainAxisAlignment:
-                      widget.emptyMainAxisAlignment ?? MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    (widget.emptyMainAxisAlignment != null)
-                        ? const SizedBox.shrink()
-                        : SizedBox(height: widget.topMargin ?? 43),
-                    widget.isServerError
-                        ? Text("500", style: InterFontPalette.fBlack_32_600)
-                        : SizedBox.square(
-                            dimension: 104.w,
-                            child: Center(
-                              child: Icon(
-                                Icons.error_outline,
-                                size: 104,
-                                color: ColorPalette.grey,
-                              ),
-                            ),
+        child: SingleChildScrollView(
+          physics: widget.scrollPhysics ?? const NeverScrollableScrollPhysics(),
+          child: SizedBox(
+            width: context.sw(),
+            child: Column(
+              mainAxisAlignment:
+                  widget.emptyMainAxisAlignment ?? MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                (widget.emptyMainAxisAlignment != null)
+                    ? const SizedBox.shrink()
+                    : SizedBox(height: widget.topMargin ?? 43),
+                widget.isServerError
+                    ? Text("500", style: InterFontPalette.fBlack_32_600)
+                    : SizedBox.square(
+                        dimension: 104.w,
+                        child: Center(
+                          child: Icon(
+                            Icons.error_outline,
+                            size: 104,
+                            color: ColorPalette.grey,
                           ),
-                    SizedBox(height: widget.isServerError ? 5 : 16),
-                    Text(
-                      widget.title ?? "Error",
-                      style:
-                          widget.titleTextStyle ??
-                          InterFontPalette.fBlack_16_600,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.errorMessage ?? "Something went wrong!",
-                      textAlign: TextAlign.center,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style:
-                          widget.errorMessageTextStyle ??
-                          InterFontPalette.fBlack_14_400,
-                    ),
-                    if (widget.buttonText != null) const SizedBox(height: 24),
-                    if (widget.buttonText != null)
-                      ValueListenableBuilder(
-                        valueListenable: isLoading,
-                        builder: (_, loading, __) {
-                          return ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: ColorPalette.primaryColor,
-                            ),
-                            onPressed: () {
-                              if (widget.customButtonFunction != null) {
-                                widget.customButtonFunction?.call();
-                              } else if (widget.reload != null) {
-                                showLoader(widget.reload!);
-                              }
-                            },
-                            child: Text(
-                              widget.buttonText ?? 'Refresh',
-                              style: InterFontPalette.fWhite_14_600,
-                            ),
-                          );
-                        },
+                        ),
                       ),
-                  ],
+                SizedBox(height: widget.isServerError ? 5 : 16),
+                Text(
+                  widget.title ?? "Error",
+                  style:
+                      widget.titleTextStyle ?? InterFontPalette.fBlack_16_600,
                 ),
-              ),
+                const SizedBox(height: 8),
+                Text(
+                  widget.errorMessage ?? "Something went wrong!",
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style:
+                      widget.errorMessageTextStyle ??
+                      InterFontPalette.fBlack_14_400,
+                ),
+                if (widget.buttonText != null) const SizedBox(height: 24),
+                if (widget.buttonText != null)
+                  ValueListenableBuilder(
+                    valueListenable: isLoading,
+                    builder: (_, loading, __) {
+                      return ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorPalette.primaryColor,
+                        ),
+                        onPressed: () {
+                          if (widget.customButtonFunction != null) {
+                            widget.customButtonFunction?.call();
+                          } else if (widget.reload != null) {
+                            showLoader(widget.reload!);
+                          }
+                        },
+                        child: Text(
+                          widget.buttonText ?? 'Refresh',
+                          style: InterFontPalette.fWhite_14_600,
+                        ),
+                      );
+                    },
+                  ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
