@@ -57,9 +57,9 @@ class BottomNavigationSection extends StatelessWidget {
             BottomNavTile(
               index: 3,
               selectedIndex: selectedTab,
-              label: "Logout",
-              enabledIcon: Assets.svgLogoutSvgrepoCom,
-              disabledIcon: Assets.svgLogoutSvgrepoCom,
+              label: "Settings",
+              enabledIcon: Assets.svgSettingsNav,
+              disabledIcon: Assets.svgSettingsNav,
               onTap: () => onTabSelected(3),
             ),
           ],

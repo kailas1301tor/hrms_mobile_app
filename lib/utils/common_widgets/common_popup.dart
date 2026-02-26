@@ -29,21 +29,23 @@ class CommonPopup extends StatefulWidget {
 }
 
 class _CommonPopupState extends State<CommonPopup> {
-  bool _isLoading = false;
+  final ValueNotifier<bool> _isLoadingNotifier = ValueNotifier<bool>(false);
 
   Future<void> _handleAction() async {
-    setState(() {
-      _isLoading = true;
-    });
+    _isLoadingNotifier.value = true;
     try {
       await widget.onActionPressed();
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        _isLoadingNotifier.value = false;
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _isLoadingNotifier.dispose();
+    super.dispose();
   }
 
   @override
@@ -78,42 +80,46 @@ class _CommonPopupState extends State<CommonPopup> {
               textAlign: TextAlign.center,
             ),
             24.verticalSpace,
-            Row(
-              children: [
-                if (widget.cancelButtonText != null) ...[
-                  Expanded(
-                    child: TextButton(
-                      onPressed: _isLoading
-                          ? null
-                          : widget.onCancelPressed ??
-                                () => Navigator.pop(context),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16.h),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100.r),
+            ValueListenableBuilder<bool>(
+              valueListenable: _isLoadingNotifier,
+              builder: (context, isLoading, child) {
+                return Row(
+                  children: [
+                    if (widget.cancelButtonText != null) ...[
+                      Expanded(
+                        child: TextButton(
+                          onPressed: isLoading
+                              ? null
+                              : widget.onCancelPressed ??
+                                    () => Navigator.pop(context),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 16.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100.r),
+                            ),
+                          ),
+                          child: Text(
+                            widget.cancelButtonText!,
+                            style: PlusJakartaSansFontPalette.base600(
+                              16,
+                              color: ColorPalette.f6D6D6D,
+                            ),
+                          ),
                         ),
                       ),
-                      child: Text(
-                        widget.cancelButtonText!,
-                        style: PlusJakartaSansFontPalette.base600(
-                          16,
-                          color: ColorPalette.f6D6D6D,
-                        ),
+                      12.horizontalSpace,
+                    ],
+                    Expanded(
+                      child: PrimaryButton(
+                        onPressed: isLoading ? null : _handleAction,
+                        buttonText: widget.actionButtonText,
+                        height: 50.h,
+                        isLoading: isLoading,
                       ),
                     ),
-                  ),
-                  12.horizontalSpace,
-                ],
-                Expanded(
-                  child: PrimaryButton(
-                    onPressed: _isLoading ? null : _handleAction,
-                    buttonText: widget.actionButtonText,
-                    height: 50.h,
-                    isLoading: _isLoading,
-                    color: ColorPalette.fE53B40, // Red for logout/danger
-                  ),
-                ),
-              ],
+                  ],
+                );
+              },
             ),
           ],
         ),

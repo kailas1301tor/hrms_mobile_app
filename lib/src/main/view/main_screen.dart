@@ -6,15 +6,13 @@ import 'package:hrms_mobile/src/home/view/home_screen.dart';
 import 'package:hrms_mobile/src/track/view/track_screen.dart';
 import 'package:hrms_mobile/src/salary/view/salary_screen.dart';
 import 'package:hrms_mobile/src/main/view/widgets/bottom_navigation_section.dart';
-import 'package:hrms_mobile/utils/common_widgets/common_popup.dart';
-import 'package:hrms_mobile/utils/routes/route_constants.dart';
 
 import '../../../res/styles/color_palette.dart';
 import '../../../utils/helpers/common_functions.dart';
 import '../../../res/styles/app_theme.dart';
 
 import 'widgets/custom_common_app_bar.dart';
-import '../../login/notifier/login_notifier.dart';
+import '../../settings/view/settings_screen.dart';
 
 // Manual Notifier instead of riverpod_generator for simplicity
 class SelectedTabNotifier extends Notifier<int> {
@@ -51,28 +49,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     );
   }
 
-  void _showLogoutPopup() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => CommonPopup(
-        title: 'Logout Confirmation',
-        message: 'Are you sure you want to logout from the application?',
-        actionButtonText: 'Logout',
-        cancelButtonText: 'Cancel',
-        onActionPressed: () async {
-          return await ref.read(loginProvider.notifier).logout(() {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              RouteConstants.routeLoginScreen,
-              (route) => false,
-            );
-          });
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final selectedTab = ref.watch(selectedTabProvider);
@@ -80,6 +56,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       const HomeScreen(),
       const TrackScreen(),
       const StaffSalaryScreen(),
+      const SettingsScreen(),
     ];
 
     return PopScope(
@@ -120,11 +97,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           bottomNavigationBar: BottomNavigationSection(
             selectedTab: selectedTab,
             onTabSelected: (index) {
-              if (index == 3) {
-                _showLogoutPopup();
-              } else {
-                ref.read(selectedTabProvider.notifier).set(index);
-              }
+              ref.read(selectedTabProvider.notifier).set(index);
             },
           ),
         ),

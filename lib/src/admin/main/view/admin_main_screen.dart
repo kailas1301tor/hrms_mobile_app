@@ -13,10 +13,7 @@ import '../../../../generated/assets.dart';
 import '../../../../res/styles/app_theme.dart';
 import '../../../../res/styles/color_palette.dart';
 import '../../../../utils/helpers/common_functions.dart';
-
-import '../../../../utils/common_widgets/common_popup.dart';
-import '../../../../utils/routes/route_constants.dart';
-import '../../../login/notifier/login_notifier.dart';
+import '../../../settings/view/settings_screen.dart';
 
 class SelectedTabNotifier extends Notifier<int> {
   @override
@@ -52,28 +49,6 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
     );
   }
 
-  void _showLogoutPopup() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => CommonPopup(
-        title: 'Logout Confirmation',
-        message: 'Are you sure you want to logout from the application?',
-        actionButtonText: 'Logout',
-        cancelButtonText: 'Cancel',
-        onActionPressed: () async {
-          return await ref.read(loginProvider.notifier).logout(() {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              RouteConstants.routeLoginScreen,
-              (route) => false,
-            );
-          });
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final selectedTab = ref.watch(adminSelectedTabProvider);
@@ -81,7 +56,7 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
       const AdminSummaryScreen(),
       const AdminAttendanceScreen(),
       const AdminRequestsScreen(),
-      const SizedBox(), // Placeholder for Settings
+      const SettingsScreen(),
     ];
 
     return PopScope(
@@ -128,11 +103,7 @@ class _AdminMainScreenState extends ConsumerState<AdminMainScreen> {
           bottomNavigationBar: AdminBottomNavigationSection(
             selectedTab: selectedTab,
             onTabSelected: (index) {
-              if (index == 3) {
-                _showLogoutPopup();
-              } else {
-                ref.read(adminSelectedTabProvider.notifier).set(index);
-              }
+              ref.read(adminSelectedTabProvider.notifier).set(index);
             },
           ),
         ),
@@ -193,9 +164,9 @@ class AdminBottomNavigationSection extends StatelessWidget {
             BottomNavTile(
               index: 3,
               selectedIndex: selectedTab,
-              label: "Logout",
-              enabledIcon: Assets.svgLogoutSvgrepoCom,
-              disabledIcon: Assets.svgLogoutSvgrepoCom,
+              label: "Settings",
+              enabledIcon: Assets.svgSettingsNav,
+              disabledIcon: Assets.svgSettingsNav,
               onTap: () => onTabSelected(3),
             ),
           ],
