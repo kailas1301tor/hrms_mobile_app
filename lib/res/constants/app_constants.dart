@@ -1,6 +1,7 @@
 class AppConstants {
   static const String currency = "AED";
-  static const String baseURL = "https://hrms-project-mob-test.onrender.com";
+  // static const String baseURL = "https://hrms-project-mob-test.onrender.com";
+  static const String baseURL = "https://hrm.leptisgroups.com/api";
 
   static String api = "/api";
 
@@ -32,4 +33,5 @@ class AppConstants {
   static String attendance = "$prefix/attendance";
   static String branches = "$prefix/branches";
   static String logout = "$prefix$auth/logout";
+  static String refresh = "$prefix$auth/refresh";
 }

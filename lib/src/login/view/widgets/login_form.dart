@@ -20,7 +20,7 @@ class LoginForm extends ConsumerWidget {
           hintText: 'enter user name',
           maxLength: 50,
           errorText: state.emailError,
-          keyboardType: TextInputType.name,
+          keyboardType: TextInputType.emailAddress,
           textCapitalization: TextCapitalization.words,
           prefix: Icon(
             Icons.person_outline,

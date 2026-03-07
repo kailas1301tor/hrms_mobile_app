@@ -8,10 +8,20 @@ import 'color_palette.dart';
 import 'fonts/inter_font_palette.dart';
 
 class AppTheme {
+  /// Default style for light backgrounds (e.g. main app screens).
+  /// Status bar: transparent/dark icons.
   static const systemOverlayStyle = SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
     statusBarBrightness: Brightness.light,
+  );
+
+  /// Style for dark backgrounds (e.g. login, splash).
+  /// Status bar: dark blue, light icons for contrast on Android.
+  static const systemOverlayStyleDark = SystemUiOverlayStyle(
+    statusBarColor: ColorPalette.loginBackground,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
   );
 
   static ThemeData get themeData => ThemeData(

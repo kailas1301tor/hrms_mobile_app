@@ -918,41 +918,45 @@ class NetworkServices extends NetWorkBaseServices {
       return false;
     }
     try {
-      // logger.i('🔄 Calling refresh token API...');
-      // final response = safe(
-      //   postRequest(
-      //     endPoint: ApiConstants.,
-      //     parameters: {'refresh': AppConstants.refreshToken},
-      //     isFromAuth: true,
-      //   ),
-      // );
-      // response
-      //     .fold(
-      //       (left) {
-      //         logger.e(left.message);
-      //         return false;
-      //       },
-      //       (right) {
-      //         logger.i('✅ Access token refreshed');
-      //         AppConstants.accessToken = right.data['access'] ?? '';
-      //         // container
-      //         //     .read(sembastServicesProvider)
-      //         //     .saveTokens(
-      //         //       accessToken: right.data['access'] ?? "",
-      //         //       refreshToken: AppConstants.refreshToken,
-      //         //     );
-      //         return true;
-      //       },
-      //     )
-      //     .catchError((e) {
-      //       logger.e(e);
-      //       return false;
-      //     });
+      logger.i('🔄 Calling refresh token API...');
+      final response = await safe(
+        postRequest(
+          endPoint: AppConstants.refresh,
+          parameters: {'refreshToken': AppConstants.refreshToken},
+          isFromAuth: true,
+        ),
+      );
+      String? newToken;
+      response.fold(
+        (left) {
+          logger.e('❌ Refresh failed: ${left.message}');
+        },
+        (right) {
+          final data = right.data;
+          if (data is! Map<String, dynamic>) {
+            logger.e('❌ Refresh response is not a map');
+            return;
+          }
+          final token = data['token']?.toString();
+          if (token == null || token.isEmpty) {
+            logger.e('❌ No token in refresh response');
+            return;
+          }
+          newToken = token;
+        },
+      );
+      if (newToken == null) return false;
+      logger.i('✅ Access token refreshed');
+      AppConstants.accessToken = newToken!;
+      await ref.read(sembastServicesProvider).saveTokens(
+            accessToken: newToken,
+            refreshToken: AppConstants.refreshToken,
+          );
+      return true;
     } catch (e) {
       logger.e('💥 Unexpected Error: $e');
       return false;
     }
-    return false;
   }
 
   Future<void> _logout() async {
